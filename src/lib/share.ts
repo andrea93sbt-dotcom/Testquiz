@@ -47,7 +47,7 @@ export function shareUrl(payload: string): string {
 
 export async function shareResult(card: ShareCard): Promise<"shared" | "copied" | "failed"> {
   const url = shareUrl(encodeShare(card));
-  const text = `Su Platea sono «${card.a}». ${card.l}`;
+  const text = `Il mio gusto su Platea: ${card.a}. ${card.l}`;
   try {
     if (typeof navigator !== "undefined" && navigator.share) {
       await navigator.share({ title: `${card.a} · Platea`, text, url });

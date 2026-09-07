@@ -29,10 +29,10 @@ export function MustConsent({ children }: { children: ReactNode }) {
     return (
       <main id="contenuto" className="mx-auto flex min-h-dvh max-w-xl flex-col px-5 py-10">
         <p className="text-xs font-medium tracking-[0.22em] text-ticket uppercase">Platea</p>
-        <h1 className="mt-3 font-display text-4xl italic text-fg">Prima gli annunci.</h1>
+        <h1 className="mt-3 font-display text-4xl italic text-fg">Prima una cosa</h1>
         <p className="mt-4 text-base leading-relaxed text-muted">
-          Questa pagina fa parte del quiz. Accetta gli annunci dal banner e conferma
-          l'età.
+          Per vedere questa pagina accetta gli annunci (il riquadro in basso)
+          e conferma di avere almeno {LEGAL.ageMin} anni.
         </p>
         <label className="mt-6 flex items-start gap-3 text-sm leading-relaxed text-muted">
           <input

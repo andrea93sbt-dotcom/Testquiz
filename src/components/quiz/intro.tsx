@@ -61,13 +61,15 @@ export function Intro() {
         <header className="rise-in rounded-md border border-border bg-surface/95 p-5">
           <p className="text-xs font-medium tracking-[0.22em] text-ticket uppercase">Platea</p>
           <h1 className="mt-3 font-display text-4xl italic leading-tight text-fg sm:text-5xl">
-            Cosa vedi stasera.
+            Cosa vedi stasera?
           </h1>
           <p className="mt-4 max-w-md text-base leading-relaxed text-muted">
-            Tre modi: venti domande, cento nella piazza, oppure dieci turni con
-            tre film da mettere sulla TV, sul tavolo o nel cestino.{" "}
-            {CATALOG_SIZE.toLocaleString("it-IT")} titoli, in italiano quando
-            il titolo italiano esiste.
+            Rispondi a qualche domanda e ti consiglio un film. Tre modi: uno
+            veloce, uno preciso, oppure a partire dai film che hai già visto.
+          </p>
+          <p className="mt-3 max-w-md text-base leading-relaxed text-muted">
+            Nel catalogo ci sono {CATALOG_SIZE.toLocaleString("it-IT")} film.
+            Se esiste il titolo italiano, usiamo quello.
           </p>
           {platformLine ? <p className="mt-3 text-sm text-fg">{platformLine}</p> : null}
         </header>
@@ -93,8 +95,9 @@ export function Intro() {
                 startShort();
               }}
             >
-              20 domande
+              Quiz breve · 20 domande
             </Button>
+            <p className="-mt-1 text-sm text-subtle">Cinque minuti. Basta per un consiglio.</p>
             <Button
               variant="secondary"
               size="lg"
@@ -106,8 +109,9 @@ export function Intro() {
                 start();
               }}
             >
-              100 domande
+              Quiz completo · 100 domande
             </Button>
+            <p className="-mt-1 text-sm text-subtle">Più lungo, più preciso.</p>
             <Button
               variant="secondary"
               size="lg"
@@ -119,8 +123,12 @@ export function Intro() {
                 startSeen();
               }}
             >
-              Li hai visti? · 10 turni
+              Film che hai già visto
             </Button>
+            <p className="-mt-1 text-sm text-subtle">
+              Dieci volte, tre titoli. TV se ti è piaciuto, tavolo se non
+              l'hai visto, cestino se non ti è piaciuto.
+            </p>
             {hasProgress ? (
               <Button
                 variant="ghost"
@@ -129,13 +137,13 @@ export function Intro() {
                 disabled={!canPlay}
                 onClick={() => resume()}
               >
-                Continua
+                Continua da dove ti eri fermato
               </Button>
             ) : null}
           </div>
           <p className="text-sm leading-relaxed text-subtle">
-            PC: frecce o WASD. Telefono: swipe, oppure tocca la risposta. Poi
-            cammini verso quella sala.
+            Al computer: frecce o WASD. Al telefono: tocca la risposta, oppure
+            scorri verso una sala.
           </p>
         </section>
 

@@ -19,12 +19,11 @@ function CookiePage() {
         : "non hai ancora scelto";
 
   return (
-    <LegalPage title="Informativa sui cookie">
+    <LegalPage title="Cookie">
       <p>
         Informativa resa ai sensi dell'art. 122 del d.lgs. 196/2003 e del
         provvedimento del Garante sull'uso dei cookie, in attuazione della
-        direttiva ePrivacy. Questa pagina è il registro delle tecnologie di
-        tracciamento.
+        direttiva ePrivacy.
       </p>
       <p>
         Stato attuale: {status}
@@ -36,16 +35,16 @@ function CookiePage() {
         </button>
       </p>
 
-      <h2>Cookie e archivi strettamente necessari</h2>
+      <h2>Cookie e archivi necessari</h2>
       <p>Non richiedono consenso. Servono a far funzionare Platea.</p>
       <ul>
         <li>
           <span className="text-fg">platea-quiz</span> — risposte e piattaforme,
-          solo su questo browser, durata finché non cancelli.
+          solo su questo browser, fino a quando non le cancelli.
         </li>
         <li>
-          <span className="text-fg">platea-ads</span> — prova della tua scelta
-          di consenso (obbligo di accountability GDPR).
+          <span className="text-fg">platea-ads</span> — la tua scelta sugli
+          annunci.
         </li>
         <li>
           <span className="text-fg">platea-legal</span> — conferma di età
@@ -65,9 +64,8 @@ function CookiePage() {
         .
       </p>
       <p>
-        Gli spazi sono etichettati «Pubblicità» (trasparenza DSA). Non sono
-        inserzioni di Platea: sono di terzi. Il catalogo film non è
-        personalizzato da Google.
+        Gli spazi sono etichettati «Pubblicità». Non sono inserzioni di
+        Platea: sono di terzi. Il catalogo film non è personalizzato da Google.
       </p>
 
       <h2>Cosa non usiamo</h2>

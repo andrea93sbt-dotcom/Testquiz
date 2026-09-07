@@ -15,7 +15,7 @@ export const Route = createFileRoute("/condividi")({
     p: typeof search.p === "string" ? search.p : "",
   }),
   component: CondividiRoute,
-  head: () => ({ meta: [{ title: "Un gusto · Platea" }] }),
+  head: () => ({ meta: [{ title: "Un risultato · Platea" }] }),
 });
 
 function CondividiRoute() {
@@ -37,21 +37,21 @@ function CondividiPage() {
       <AppBar />
       {!card || movies.length === 0 ? (
         <>
-          <h1 className="font-display text-4xl italic text-fg">Link non valido.</h1>
-          <p className="mt-3 text-muted">Questo risultato non si apre. Fai il quiz e condividi di nuovo.</p>
+          <h1 className="font-display text-4xl italic text-fg">Questo link non funziona.</h1>
+          <p className="mt-3 text-muted">Fai il quiz e poi condividilo di nuovo.</p>
           <Button asChild className="mt-6 min-h-12">
-            <Link to="/">Vai al quiz</Link>
+            <Link to="/">Vai all'inizio</Link>
           </Button>
         </>
       ) : (
         <>
           <p className="text-xs font-medium tracking-[0.18em] text-ticket uppercase">
-            Gusto di un amico · {card.n} risposte
+            Il risultato di un amico · {card.n} risposte
           </p>
           <h1 className="mt-4 font-display text-4xl italic leading-tight text-fg">{card.a}</h1>
           <p className="mt-2 text-base text-muted">{card.l}</p>
           <Button asChild className="mt-6 min-h-12">
-            <Link to="/">Fai il tuo quiz</Link>
+            <Link to="/">Fai anche tu il quiz</Link>
           </Button>
           <AdSlot format="banner" className="mt-10" />
           <ol className="mt-10 divide-y divide-border border-y border-border">

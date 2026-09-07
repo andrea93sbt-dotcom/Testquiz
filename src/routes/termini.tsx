@@ -12,50 +12,50 @@ function TermsPage() {
     <LegalPage title="Termini di utilizzo">
       <p>
         Usando Platea accetti questi termini. Se non li accetti, non usare
-        l'app. Servizio rivolto a chi ha almeno {LEGAL.ageMin} anni.
+        l'app. Il servizio è per chi ha almeno {LEGAL.ageMin} anni.
       </p>
 
       <h2>1. Cos'è Platea</h2>
       <p>
-        Uno strumento gratuito di suggerimento cinematografico. Non è un
-        catalogo ufficiale di Netflix, Prime Video o altre piattaforme. I link
-        di ricerca aprono siti di terzi. La disponibilità dei titoli cambia
-        senza preavviso.
+        Un quiz gratuito per consigliare un film. Non è il catalogo ufficiale
+        di Netflix, Prime Video o altre piattaforme. I link di ricerca aprono
+        siti di altri. I film in streaming cambiano senza preavviso.
       </p>
 
-      <h2>2. Editore</h2>
+      <h2>2. Chi lo pubblica</h2>
       <p>Il servizio è pubblicato da {controllerLabel()}.</p>
 
-      <h2>3. Proprietà intellettuale</h2>
+      <h2>3. Diritti sui film</h2>
       <p>
         Marchi, titoli e opere citati appartengono ai rispettivi titolari.
-        Platea non rivendica diritti sui film. È lecito citarli per indicarli
-        come possibile visione. Non offriamo copie né streaming. Il catalogo
-        di 5000 titoli usa titolo (in italiano se Wikidata lo ha), anno, durata, genere, paese, regia, interpreti
-        e argomenti da fonti pubbliche (dataset IMDb e Wikidata). Locandine e trame, se ci sono,
-        arrivano da Wikipedia (CC BY-SA). I link “dove vederlo” aprono
-        JustWatch: non è un catalogo ufficiale delle piattaforme.
+        Platea non rivendica diritti sui film. Li nominiamo per indicarti una
+        possibile visione. Non offriamo copie né streaming. Il catalogo di
+        5000 titoli usa titolo (in italiano se Wikidata lo ha), anno, durata,
+        genere, paese, regia, interpreti e argomenti da fonti pubbliche
+        (dataset IMDb e Wikidata). Locandine e trame, se ci sono, arrivano da
+        Wikipedia (licenza CC BY-SA). I link “dove si vede” aprono JustWatch:
+        non è un catalogo ufficiale delle piattaforme.
       </p>
 
       <h2>4. Pubblicità</h2>
       <p>
-        Eventuali annunci sono di terzi, etichettati come tali (Regolamento
-        UE 2022/2065, DSA). Non sono una raccomandazione editoriale.
+        Gli annunci, se ci sono, sono di terzi e sono etichettati come tali
+        (Regolamento UE 2022/2065, DSA). Non sono un consiglio di Platea.
       </p>
 
       <h2>5. Nessuna garanzia</h2>
       <p>
-        I suggerimenti sono statistici e culturali, non un consiglio
-        professionale. Nei limiti di legge non rispondiamo di inesattezze del
-        catalogo, di interruzioni o di contenuti aperti tramite link esterni
-        (JustWatch, Google, piattaforme).
+        I consigli sono un confronto tra le tue risposte e il catalogo, non un
+        parere professionale. Nei limiti di legge non rispondiamo di errori
+        del catalogo, di interruzioni o di contenuti aperti tramite link
+        esterni (JustWatch, Google, piattaforme).
       </p>
 
-      <h2>6. Pratiche commerciali</h2>
+      <h2>6. Acquisti</h2>
       <p>
-        Nessun acquisto in-app. Nessun abbonamento a Platea. Non usiamo
-        preselezioni occulte sul consenso. I prezzi di terzi, se compaiono in
-        un annuncio, sono responsabilità dell'inserzionista.
+        Nessun acquisto dentro l'app. Nessun abbonamento a Platea. Non
+        pre-selezioniamo caselle sul consenso. I prezzi di terzi, se
+        compaiono in un annuncio, sono responsabilità dell'inserzionista.
       </p>
 
       <h2>7. Legge e foro</h2>

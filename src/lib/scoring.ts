@@ -45,7 +45,7 @@ const AXIS_LABEL: Record<Axis, string> = {
   thriller: "thriller",
   horror: "horror",
   scifi: "fantascienza",
-  romance: "romanticismo",
+  romance: "storie d'amore",
   crime: "crime",
   fantasy: "fantasy",
   animazione: "animazione",
@@ -53,40 +53,40 @@ const AXIS_LABEL: Record<Axis, string> = {
   avventura: "avventura",
   guerra: "guerra",
   mistero: "mistero",
-  biografico: "biografico",
+  biografico: "biografie",
   western: "western",
   musical: "musical",
-  leggero: "leggerezza",
-  oscuro: "tono scuro",
+  leggero: "film leggeri",
+  oscuro: "film cupi",
   teso: "tensione",
   malinconico: "malinconia",
-  sollevante: "sollevamento",
-  strano: "stranezza",
+  sollevante: "film allegri",
+  strano: "film strani",
   ironico: "ironia",
   lento: "ritmo lento",
   veloce: "ritmo veloce",
-  semplice: "chiarezza",
-  complesso: "complessità",
-  intimo: "intimità",
-  spettacolo: "spettacolo",
-  stilizzato: "stile",
+  semplice: "facile da seguire",
+  complesso: "film impegnativi",
+  intimo: "storie intime",
+  spettacolo: "grande spettacolo",
+  stilizzato: "stile marcato",
   dialoghi: "dialoghi",
   immagini: "immagini",
   classico: "classici",
-  moderno: "contemporaneo",
+  moderno: "film recenti",
   italiano: "cinema italiano",
   hollywood: "Hollywood",
   europa: "Europa",
   asia: "Asia",
-  speranza: "speranza",
-  cinico: "disincanto",
+  speranza: "finali che rialzano",
+  cinico: "film cinici",
   vero: "storie vere",
   famiglia: "famiglia",
   amore: "amore",
   potere: "potere",
   identita: "identità",
-  breve: "durata breve",
-  lungo: "durata lunga",
+  breve: "film corti",
+  lungo: "film lunghi",
 };
 
 export { AXIS_LABEL };
@@ -186,43 +186,43 @@ export function topAxes(vector: Record<Axis, number>, n = 6): { axis: Axis; valu
 export function pickArchetype(vector: Record<Axis, number>): Archetype {
   const packs: { name: string; line: string; axes: Axis[] }[] = [
     {
-      name: "Compagnia sul divano",
-      line: "Vuoi uscire meglio di come sei entrato.",
+      name: "Serata comoda",
+      line: "Stasera vuoi un film che ti fa stare bene.",
       axes: ["commedia", "leggero", "semplice", "sollevante", "breve"],
     },
     {
-      name: "Spettatore d'impatto",
-      line: "Scala grande, corpo in sala, mestiere visibile.",
+      name: "Voglia di azione",
+      line: "Vuoi ritmo, inseguimenti e qualcosa di grande da vedere.",
       axes: ["azione", "spettacolo", "veloce", "hollywood", "avventura"],
     },
     {
-      name: "Volontario al buio",
-      line: "Cerchi il nervo scoperto, non il rumore.",
+      name: "Ti piace il brivido",
+      line: "Vuoi un film che ti tiene teso, non rumore a caso.",
       axes: ["horror", "teso", "oscuro", "thriller"],
     },
     {
-      name: "Cinefilo notturno",
-      line: "Tempi lunghi, silenzi, e un dopo-film da metabolizzare.",
+      name: "Film da lasciare in testa",
+      line: "Tempi lunghi, e qualcosa a cui pensare dopo.",
       axes: ["lento", "malinconico", "intimo", "complesso", "immagini"],
     },
     {
-      name: "Architetto di mondi",
-      line: "Idee che restano dopo i titoli di coda.",
+      name: "Mondi nuovi",
+      line: "Idee e posti che non esistono.",
       axes: ["scifi", "complesso", "fantasy", "spettacolo"],
     },
     {
-      name: "Sentimentale lucido",
-      line: "L'amore sì, lo sciroppo no.",
+      name: "Amore, senza troppi zuccheri",
+      line: "Una storia d'amore, non un melodramma.",
       axes: ["romance", "amore", "intimo", "malinconico"],
     },
     {
-      name: "Realista da sala",
-      line: "Persone vere, nodi sporchi, niente costume.",
+      name: "Storie vere",
+      line: "Persone vere, niente costume.",
       axes: ["vero", "biografico", "dramma", "crime"],
     },
     {
-      name: "Viaggiatore d'altri cinema",
-      line: "Fuori dal circuito più rumoroso.",
+      name: "Fuori dal solito",
+      line: "Non solo i film che senti nominare sempre.",
       axes: ["europa", "asia", "italiano", "classico"],
     },
   ];
@@ -259,17 +259,17 @@ function reasonsFor(movie: Movie, profile: Profile): string[] {
     .slice(0, 3)
     .map((t) => AXIS_LABEL[t.axis]);
   const out: string[] = [];
-  if (shared.length) out.push(`Affine per ${shared.join(", ")}`);
+  if (shared.length) out.push(`Perché: ${shared.join(", ")}`);
   if (profile.flags.maxMinutes && movie.runtime <= profile.flags.maxMinutes) {
-    out.push(`Sta nel tempo che hai (${movie.runtime} min)`);
+    out.push(`Dura ${movie.runtime} min, come volevi`);
   }
   if (profile.flags.company === "famiglia" && movie.kidsOk) {
-    out.push("Adatto a una serata in famiglia");
+    out.push("Va bene in famiglia");
   }
   const owned = profile.flags.platforms ?? [];
   const on = movie.platforms.filter((p) => owned.includes(p));
   if (on.length) {
-    out.push(`Priorità su ${on.map((p) => PLATFORM_META[p].label).join(", ")}`);
+    out.push(`Da cercare su ${on.map((p) => PLATFORM_META[p].label).join(", ")}`);
   }
   if (movie.tags.length) out.push(movie.tags.slice(0, 3).join(" · "));
   return out.slice(0, 3);
@@ -336,8 +336,8 @@ export function searchRecipes(profile: Profile, matches: Match[]): SearchRecipe[
     google: `https://www.google.com/search?q=${encodeURIComponent(query + " film streaming")}`,
   });
   return [
-    mk("Cerca per tono", q1 || "film stasera"),
-    mk("Parti da un titolo vicino", q2),
+    mk("Cerca film di questo tipo", q1 || "film stasera"),
+    mk("Cerca a partire da questo film", q2),
   ];
 }
 

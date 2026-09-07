@@ -35,7 +35,7 @@ export function QuizView() {
   if (!question || !chapter) {
     return (
       <main id="contenuto" className="mx-auto max-w-xl px-4 py-10">
-        <p className="text-muted">Il quiz è finito.</p>
+        <p className="text-muted">Hai finito le domande.</p>
       </main>
     );
   }
@@ -49,7 +49,7 @@ export function QuizView() {
         <PlazaCanvas
           question={question.q}
           hint={question.hint}
-          chapter={`Atto ${chapter.id} · ${chapter.title}`}
+          chapter={chapter.title}
           index={safeIndex}
           total={deck.length}
           options={opts}

@@ -20,18 +20,18 @@ export function TagPage({ tag }: { tag: string }) {
     <main id="contenuto" className="mx-auto min-h-dvh max-w-xl px-4 py-8 sm:px-8">
       <AppBar />
       <p className="text-xs font-medium tracking-[0.18em] text-ticket uppercase">
-        Tag · {found.movies.length.toLocaleString("it-IT")} film
+        {found.movies.length.toLocaleString("it-IT")} film di questo tipo
       </p>
       <h1 className="mt-3 font-display text-4xl italic leading-tight text-fg">{found.label}</h1>
       <p className="mt-3 text-base leading-relaxed text-muted">
-        Titoli del catalogo con questo tag, nello stesso ordine della classifica.
+        Altri film così. I primi sono quelli più vicini al tuo gusto.
       </p>
       <Link to="/" className="mt-4 inline-flex min-h-11 items-center text-sm text-ticket underline-offset-2 hover:underline">
-        Torna al quiz
+        Torna all'inizio
       </Link>
       <AdSlot format="banner" className="mt-8" />
       {list.length === 0 ? (
-        <p className="mt-10 text-muted">Nessun film con questo tag.</p>
+        <p className="mt-10 text-muted">Nessun film di questo tipo.</p>
       ) : (
         <ol className="mt-10 divide-y divide-border border-y border-border">
           {list.map((movie, i) => (

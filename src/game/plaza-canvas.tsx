@@ -578,13 +578,15 @@ export function PlazaCanvas(props: PlazaProps) {
         />
       </div>
 
-      <p className="mt-3 text-center text-sm text-subtle">Frecce o swipe verso una sala.</p>
+      <p className="mt-3 text-center text-sm text-subtle">
+        Tocca una risposta. Al computer: frecce o WASD. Al telefono: scorri verso una sala.
+      </p>
       <button
         type="button"
         onClick={props.onSkip}
         className="mx-auto mt-1 min-h-11 px-3 text-sm text-muted underline-offset-2 hover:text-fg hover:underline"
       >
-        Salta
+        Salta questa domanda
       </button>
     </div>
   );

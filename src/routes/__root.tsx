@@ -18,7 +18,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Venti o cento domande, oppure dieci turni su film che hai già visto, per trovare cosa vedere stasera.",
+          "Un quiz per capire che film ti va stasera. 20 domande, 100, oppure 10 turni sui film che hai già visto.",
       },
       { name: "theme-color", content: "#2a1030" },
       { name: "google-adsense-account", content: ADS_CONFIG.client },

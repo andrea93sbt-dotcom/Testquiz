@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const ZONES: { id: SeenVerdict; title: string; hint: string }[] = [
-  { id: "like", title: "TV", hint: "Visto, mi è piaciuto" },
+  { id: "like", title: "TV", hint: "L'ho visto e mi è piaciuto" },
   { id: "unseen", title: "Tavolo", hint: "Non l'ho visto" },
-  { id: "dislike", title: "Cestino", hint: "Visto, non mi è piaciuto" },
+  { id: "dislike", title: "Cestino", hint: "L'ho visto e non mi è piaciuto" },
 ];
 
 const SPRITE: Record<SeenVerdict, string> = {
@@ -48,12 +48,12 @@ export function SeenView() {
     <main id="contenuto" className="mx-auto flex min-h-dvh max-w-xl flex-col px-4 py-4 sm:px-6 sm:py-6">
       <AppBar />
       <p className="text-sm text-muted">
-        Turno {Math.min(round + 1, 10)} / 10
+        Turno {Math.min(round + 1, 10)} di 10
       </p>
-      <h1 className="mt-2 font-display text-3xl italic text-fg">La stanza</h1>
+      <h1 className="mt-2 font-display text-3xl italic text-fg">Hai già visto questi film?</h1>
       <p className="mt-2 text-base leading-relaxed text-muted">
-        Tre film. Trascinali nella zona, o tocca il film e poi la zona: TV se ti
-        è piaciuto, tavolo se non l'hai visto, cestino se l'hai visto e no.
+        Tre titoli. Trascinali, oppure tocca il film e poi dove va: TV se ti è
+        piaciuto, tavolo se non l'hai visto, cestino se non ti è piaciuto.
       </p>
       <SortBoard
         key={round}
@@ -67,11 +67,11 @@ export function SeenView() {
         onUnplace={unplaceSeen}
       />
       <p className="mt-3 text-sm text-subtle">
-        {allIn ? "Tutti e tre sistemati." : `${placed} / ${movies.length} sistemati`}
+        {allIn ? "Ok, tutti e tre." : `${placed} di ${movies.length} a posto`}
       </p>
       {allIn ? (
         <Button size="lg" className="mt-4 min-h-12" onClick={nextSeenRound}>
-          {round >= 9 ? "Vedi i film" : "Turno successivo"}
+          {round >= 9 ? "Vedi i consigli" : "Prossimo turno"}
         </Button>
       ) : null}
     </main>
@@ -167,7 +167,7 @@ function SortBoard({
           />
         ))}
         {hand.length === 0 ? (
-          <p className="col-span-3 py-4 text-center text-sm text-muted">Tutti a posto.</p>
+          <p className="col-span-3 py-4 text-center text-sm text-muted">Ok, tutti e tre.</p>
         ) : null}
       </div>
       {ghost ? (

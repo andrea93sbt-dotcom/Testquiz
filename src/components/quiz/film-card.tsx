@@ -116,7 +116,7 @@ export function Availability({ movie, owned }: { movie: Movie; owned: Platform[]
         rel="noreferrer"
         className="mt-2 inline-flex min-h-10 items-center text-xs font-medium text-ticket underline-offset-2 hover:underline"
       >
-        Verifica dove si vede ora su JustWatch
+        Dove si vede adesso
       </a>
     </div>
   );
@@ -156,7 +156,7 @@ export function Plot({
           className="mt-2 min-h-11 text-left text-xs font-medium text-ticket underline-offset-2 hover:underline"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? "Riduci" : compact ? "Trama" : "Trama completa"}
+          {open ? "Nascondi" : compact ? "Leggi la trama" : "Tutta la trama"}
         </button>
       ) : null}
       {wiki ? (
@@ -165,7 +165,7 @@ export function Plot({
           <a href={wiki} target="_blank" rel="noreferrer" className="underline underline-offset-2">
             Wikipedia
           </a>
-          , CC BY-SA.
+          , licenza CC BY-SA.
         </p>
       ) : null}
     </div>

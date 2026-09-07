@@ -19,7 +19,7 @@ export function AppBar() {
     <div className="mb-4">
       <div className="flex items-center justify-between gap-3">
         <Button variant="ghost" size="sm" className="min-h-11 px-2" onClick={toMenu}>
-          Menu
+          Torna all'inizio
         </Button>
         <button
           type="button"
@@ -27,17 +27,18 @@ export function AppBar() {
           onClick={() => setAskOff((v) => !v)}
           aria-expanded={askOff}
         >
-          Annunci on
+          Annunci accesi
         </button>
       </div>
       {askOff ? (
         <div className="mt-3 rounded-md border border-border bg-surface p-4">
           <p className="text-sm leading-relaxed text-muted">
-            Gli annunci tengono Platea gratis. Se li spegni, il quiz si chiude.
+            Gli annunci tengono Platea gratis. Se li spegni, torni all'inizio
+            e non puoi giocare.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" className="min-h-11" onClick={() => setAskOff(false)}>
-              Lascia accesi
+              Tienili accesi
             </Button>
             <Button
               size="sm"
@@ -48,7 +49,7 @@ export function AppBar() {
                 toMenu();
               }}
             >
-              Spegni
+              Spegni e esci
             </Button>
           </div>
         </div>

@@ -43,20 +43,20 @@ export function ConsentBanner() {
       className="fixed inset-0 z-50 flex items-end justify-center bg-bg/80 p-4 backdrop-blur-sm sm:items-center"
     >
       <div className="w-full max-w-md pixel-panel marquee p-6">
-        <p className="font-pixel text-[9px] tracking-[0.2em] text-ticket">INSERT COIN</p>
-        <p id="ads-consent-title" className="mt-3 font-display text-2xl italic text-fg">
-          Annunci
+        <p id="ads-consent-title" className="font-display text-2xl italic text-fg">
+          Una cosa prima di iniziare
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Platea è gratuita in cambio degli annunci. Senza consenso AdSense non si
-          può usare il questionario.{" "}
+          Platea è gratis. In cambio vedi gli annunci: senza, il quiz non
+          parte. Se vuoi, leggi prima{" "}
           <Link to="/privacy" className="text-fg underline underline-offset-2">
             Privacy
           </Link>
-          {" · "}
+          {" e "}
           <Link to="/cookie" className="text-fg underline underline-offset-2">
             Cookie
           </Link>
+          .
         </p>
         <label className="mt-5 flex items-start gap-3 text-sm text-muted">
           <input
@@ -77,7 +77,7 @@ export function ConsentBanner() {
             accept();
           }}
         >
-          ACCETTA
+          Accetto e inizio
         </Button>
       </div>
     </div>

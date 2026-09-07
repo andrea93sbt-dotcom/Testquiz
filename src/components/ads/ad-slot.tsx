@@ -69,9 +69,11 @@ function Preview({ tall, waitingConsent }: { tall: boolean; waitingConsent: bool
       <p className="text-sm text-muted">
         {waitingConsent
           ? "Lo spazio si attiva se accetti gli annunci."
-          : "Anteprima. Qui comparirà un annuncio AdSense dell'editore."}
+          : "Qui comparirà un annuncio."}
       </p>
-      <p className="text-xs text-subtle">Non è un inserzionista reale.</p>
+      {waitingConsent ? null : (
+        <p className="text-xs text-subtle">Per ora è vuoto: non è un inserzionista reale.</p>
+      )}
     </div>
   );
 }

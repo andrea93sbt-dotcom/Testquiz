@@ -12,14 +12,14 @@ export const Route = createFileRoute("/privacy")({
 function PrivacyPage() {
   const who = controllerLabel();
   return (
-    <LegalPage title="Informativa sulla privacy">
+    <LegalPage title="Privacy">
       <p>
-        Questa informativa è resa ai sensi degli artt. 13 e 14 del Regolamento
-        (UE) 2016/679 (GDPR) e del d.lgs. 196/2003. Platea è un questionario di
-        gusto cinematografico che gira nel tuo browser.
+        Qui spieghiamo che dati usa Platea, come previsto dagli articoli 13 e
+        14 del GDPR e del d.lgs. 196/2003. Platea è un quiz sui film che gira
+        nel tuo browser.
       </p>
 
-      <h2>1. Titolare del trattamento</h2>
+      <h2>1. Chi è il titolare</h2>
       <p>
         Il titolare è {who}.
         {LEGAL.controllerEmail ? (
@@ -37,18 +37,17 @@ function PrivacyPage() {
         )}
       </p>
 
-      <h2>2. Dati trattati e dove stanno</h2>
+      <h2>2. Che dati restano, e dove</h2>
       <p>
-        Non c'è un account. Non inviamo le tue risposte a un nostro server.
-        Restano in <code className="font-mono text-fg">localStorage</code> su
-        questo dispositivo:
+        Non c'è un account. Non mandiamo le tue risposte a un nostro server.
+        Restano solo su questo telefono o computer:
       </p>
       <ul>
-        <li>risposte al questionario e piattaforme che hai segnato;</li>
-        <li>scelta sul consenso cookie/annunci e conferma dell'età;</li>
+        <li>le risposte al quiz e le piattaforme che hai segnato;</li>
+        <li>la scelta sugli annunci e la conferma dell'età;</li>
         <li>
           se accetti gli annunci, Google può trattare identificatori, IP
-          approssimato e dati di navigazione secondo la sua informativa.
+          approssimato e dati di navigazione, secondo la sua informativa.
         </li>
         <li>
           nei risultati il browser può chiedere a Wikipedia locandina e trama
@@ -56,47 +55,48 @@ function PrivacyPage() {
         </li>
       </ul>
       <p>
-        Non trattiamo categorie particolari di dati. Non profiliamo i gusti
-        cinematografici fuori da questo dispositivo.
+        Non trattiamo dati sulla salute o sull'orientamento. Non profiliamo i
+        tuoi gusti fuori da questo dispositivo.
       </p>
 
-      <h2>3. Finalità e basi giuridiche</h2>
+      <h2>3. Perché li usiamo</h2>
       <ul>
         <li>
-          Erogare il questionario e i suggerimenti (art. 6.1.b GDPR — servizio
-          richiesto).
+          Per farti il quiz e i consigli (art. 6.1.b GDPR: è il servizio che
+          hai chiesto).
         </li>
         <li>
-          Memorizzare la tua scelta di consenso (art. 6.1.c / 6.1.f e art. 122
-          Codice Privacy).
+          Per ricordare la tua scelta sugli annunci (art. 6.1.c / 6.1.f GDPR e
+          art. 122 del Codice Privacy).
         </li>
         <li>
-          Pubblicità di terze parti, solo con consenso libero e specifico (art.
-          6.1.a GDPR e direttiva ePrivacy). Il consenso è ritirabile in ogni
-          momento, con la stessa facilità con cui è stato dato.
+          Per la pubblicità di terzi, solo se dici di sì (art. 6.1.a GDPR e
+          direttiva ePrivacy). Puoi ritirare il consenso in qualsiasi momento,
+          con la stessa facilità con cui l'hai dato.
         </li>
       </ul>
 
-      <h2>4. Trasferimenti extra-SEE</h2>
+      <h2>4. Dati fuori dall'Europa</h2>
       <p>
-        Il servizio di base non trasferisce dati. Se accetti gli annunci,
+        Il quiz in sé non manda dati all'estero. Se accetti gli annunci,
         Google LLC (Stati Uniti) può trattare dati. Google aderisce al Data
         Privacy Framework UE-USA e usa clausole contrattuali tipo. Senza
         consenso, lo script di AdSense non viene caricato.
       </p>
 
-      <h2>5. Conservazione</h2>
+      <h2>5. Per quanto tempo</h2>
       <p>
-        I dati locali restano finché non li cancelli, non pulisci il browser o
-        non usi il pulsante sotto. Google conserva i propri dati secondo i suoi
-        termini.
+        I dati sul dispositivo restano finché non li cancelli, non pulisci il
+        browser o non usi il pulsante sotto. Google conserva i propri dati
+        secondo i suoi termini.
       </p>
 
       <h2>6. I tuoi diritti</h2>
       <p>
-        Accesso, rettifica, cancellazione, limitazione, opposizione,
-        portabilità, revoca del consenso, reclamo all'autorità. Per i dati
-        che stanno solo sul dispositivo, la cancellazione è immediata:
+        Puoi chiedere accesso, correzione, cancellazione, limitazione,
+        opposizione, portabilità, revoca del consenso, e fare reclamo
+        all'autorità. Per i dati che stanno solo sul dispositivo, la
+        cancellazione è immediata:
       </p>
       <p>
         <Button variant="secondary" className="min-h-11" onClick={wipeLocalData}>
@@ -110,13 +110,13 @@ function PrivacyPage() {
 
       <h2>7. Minori</h2>
       <p>
-        Il servizio è pensato per chi ha almeno {LEGAL.ageMin} anni (pubblicità
-        inclusa). Non è destinato a chi ha meno di 16 anni.
+        Il servizio è per chi ha almeno {LEGAL.ageMin} anni (pubblicità
+        inclusa). Non è per chi ha meno di 16 anni.
       </p>
 
       <h2>8. Cookie</h2>
       <p>
-        Dettaglio in <Link to="/cookie">Informativa cookie</Link>.
+        Il dettaglio è nella <Link to="/cookie">pagina sui cookie</Link>.
       </p>
     </LegalPage>
   );

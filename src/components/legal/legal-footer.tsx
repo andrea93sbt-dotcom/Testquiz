@@ -31,7 +31,7 @@ export function LegalFooter() {
         download="platea-vercel.zip"
         className="min-h-11 inline-flex items-center underline-offset-2 hover:text-muted hover:underline"
       >
-        Scarica lo zip
+        Scarica una copia del sito
       </a>
     </nav>
   );

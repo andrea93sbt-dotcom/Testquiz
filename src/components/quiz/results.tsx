@@ -39,7 +39,7 @@ export function Results() {
   const platformLine =
     owned.length > 0
       ? owned.map((p) => PLATFORM_META[p].label).join(" · ")
-      : "Nessun abbonamento";
+      : "Nessuna piattaforma segnata";
 
   return (
     <div className="relative min-h-dvh">
@@ -67,7 +67,7 @@ export function Results() {
         <section className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-fg">{platformLine}</p>
           <Button variant="secondary" size="sm" className="min-h-11" onClick={editPlatforms}>
-            Piattaforme
+            Le tue piattaforme
           </Button>
         </section>
 
@@ -92,7 +92,7 @@ export function Results() {
         {tonight ? (
           <Tonight movie={tonight.movie} reasons={tonight.reasons} owned={owned} />
         ) : (
-          <p className="mt-12 text-muted">Rispondi ad alcune domande.</p>
+          <p className="mt-12 text-muted">Rispondi a qualche domanda, così ti propongo un film.</p>
         )}
 
         <AdSlot format="feed" className="mt-12" />
@@ -126,12 +126,12 @@ export function Results() {
         <footer className="mt-12 flex flex-col gap-3 sm:flex-row">
           {mode === "quiz" || mode === "short" ? (
             <Button variant="secondary" onClick={() => goTo(0)} className="min-h-12">
-              {mode === "short" ? "Rifai le 20 domande" : "Rifinisci il quiz"}
+              {mode === "short" ? "Rifai le 20 domande" : "Cambia qualche risposta"}
             </Button>
           ) : null}
           <Button variant="ghost" onClick={reset} className="min-h-12">
             <RotateCcw className="size-4" />
-            Ricomincia
+            Ricomincia da capo
           </Button>
         </footer>
         <LegalFooter />
@@ -139,6 +139,7 @@ export function Results() {
     </div>
   );
 }
+
 
 function Tonight({
   movie,
@@ -152,7 +153,7 @@ function Tonight({
   const meta = useFilmMeta(movie);
   return (
     <section className="mt-10 pixel-panel p-5 sm:p-7">
-      <p className="text-xs font-medium tracking-[0.18em] text-accent uppercase">Stasera in sala</p>
+      <p className="text-xs font-medium tracking-[0.18em] text-accent uppercase">Il film di stasera</p>
       <div className="mt-4 flex flex-col gap-5 sm:flex-row">
         <Poster movie={movie} meta={meta} size="hero" />
         <div className="min-w-0 flex-1">

@@ -13,22 +13,22 @@ export function ShareBar({ card, titles }: { card: ShareCard; titles: string[] }
           className="min-h-12"
           onClick={async () => {
             const result = await shareResult(card);
-            setNote(result === "copied" ? "Testo e link copiati." : result === "shared" ? "Inviato." : "");
+            setNote(result === "copied" ? "Ho copiato testo e link." : result === "shared" ? "Inviato." : "");
           }}
         >
           <Share2 className="size-4" />
-          Invia a un amico
+          Mandalo a un amico
         </Button>
         <Button
           variant="secondary"
           className="min-h-12"
           onClick={async () => {
             const ok = await copyShareUrl(card);
-            setNote(ok ? "Link copiato." : "Non riesco a copiare.");
+            setNote(ok ? "Link copiato." : "Non riesco a copiare il link.");
           }}
         >
           <Copy className="size-4" />
-          Copia link
+          Copia il link
         </Button>
         <Button
           variant="ghost"
@@ -44,12 +44,12 @@ export function ShareBar({ card, titles }: { card: ShareCard; titles: string[] }
               URL.revokeObjectURL(href);
               setNote("Immagine salvata.");
             } catch {
-              setNote("Immagine non disponibile.");
+              setNote("Non sono riuscito a salvare l'immagine.");
             }
           }}
         >
           <ImageDown className="size-4" />
-          Salva immagine
+          Salva l'immagine
         </Button>
       </div>
       {note ? (
@@ -58,7 +58,10 @@ export function ShareBar({ card, titles }: { card: ShareCard; titles: string[] }
           {note}
         </p>
       ) : (
-        <p className="mt-2 text-sm text-subtle">Il link apre il tuo archetipo, senza le risposte.</p>
+        <p className="mt-2 text-sm text-subtle">
+          Chi apre il link vede il risultato. Le tue risposte restano solo sul
+          tuo telefono.
+        </p>
       )}
     </div>
   );

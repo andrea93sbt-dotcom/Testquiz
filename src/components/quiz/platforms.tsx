@@ -13,7 +13,7 @@ export function Platforms() {
   const count = selected.length;
   const summary =
     count === 0
-      ? "Nessun abbonamento"
+      ? "Nessuna selezionata"
       : count === 1
         ? PLATFORM_META[selected[0]!].label
         : `${count} piattaforme`;
@@ -22,20 +22,19 @@ export function Platforms() {
     <main id="contenuto" className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4 py-6 sm:px-8 sm:py-10">
       <AppBar />
       <header>
-        <p className="text-xs font-medium tracking-[0.22em] text-ticket uppercase">Biglietteria</p>
+        <p className="text-xs font-medium tracking-[0.22em] text-ticket uppercase">Piattaforme</p>
         <h1 className="mt-4 font-display text-3xl italic leading-tight text-fg md:text-4xl">
-          Dove guardi, di solito?
+          Su quali piattaforme sei abbonato?
         </h1>
         <p className="mt-4 max-w-lg text-base leading-relaxed text-muted">
-          Segna le piattaforme a cui sei abbonato. I film di stasera verranno
-          ordinati privilegiando quelle librerie. I cataloghi cambiano: non è
-          una garanzia, è una priorità di ricerca.
+          Segna quelle che hai. Così i film da cercare lì salgono in lista. I
+          cataloghi cambiano: non è una garanzia, è solo un aiuto.
         </p>
       </header>
 
       <section className="mt-8 flex-1">
         <PlatformPicker selected={selected} onToggle={togglePlatform} />
-        <p className="mt-4 text-sm text-subtle">{summary}. Puoi saltare.</p>
+        <p className="mt-4 text-sm text-subtle">{summary}. Puoi anche saltare.</p>
       </section>
 
       <footer className="mt-8 flex flex-col gap-2 border-t border-border pt-5 sm:flex-row">
@@ -44,7 +43,7 @@ export function Platforms() {
         </Button>
         {platformsReturn === "results" ? (
           <p className="self-center text-xs text-subtle">
-            Tornerai ai risultati, ricalcolati.
+            Poi torni alla lista, con l'ordine aggiornato.
           </p>
         ) : null}
       </footer>
