@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccessibilitaRouteImport } from './routes/accessibilita'
+import { Route as CondividiRouteImport } from './routes/condividi'
 import { Route as CookieRouteImport } from './routes/cookie'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TerminiRouteImport } from './routes/termini'
+import { Route as TagTagRouteImport } from './routes/tag.$tag'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccessibilitaRoute = AccessibilitaRouteImport.update({
   id: '/accessibilita',
   path: '/accessibilita',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CondividiRoute = CondividiRouteImport.update({
+  id: '/condividi',
+  path: '/condividi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookieRoute = CookieRouteImport.update({
@@ -40,43 +47,78 @@ const TerminiRoute = TerminiRouteImport.update({
   path: '/termini',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TagTagRoute = TagTagRouteImport.update({
+  id: '/tag/$tag',
+  path: '/tag/$tag',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accessibilita': typeof AccessibilitaRoute
+  '/condividi': typeof CondividiRoute
   '/cookie': typeof CookieRoute
   '/privacy': typeof PrivacyRoute
   '/termini': typeof TerminiRoute
+  '/tag/$tag': typeof TagTagRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accessibilita': typeof AccessibilitaRoute
+  '/condividi': typeof CondividiRoute
   '/cookie': typeof CookieRoute
   '/privacy': typeof PrivacyRoute
   '/termini': typeof TerminiRoute
+  '/tag/$tag': typeof TagTagRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/accessibilita': typeof AccessibilitaRoute
+  '/condividi': typeof CondividiRoute
   '/cookie': typeof CookieRoute
   '/privacy': typeof PrivacyRoute
   '/termini': typeof TerminiRoute
+  '/tag/$tag': typeof TagTagRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/accessibilita' | '/cookie' | '/privacy' | '/termini'
+  fullPaths:
+    | '/'
+    | '/accessibilita'
+    | '/condividi'
+    | '/cookie'
+    | '/privacy'
+    | '/termini'
+    | '/tag/$tag'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/accessibilita' | '/cookie' | '/privacy' | '/termini'
-  id: '__root__' | '/' | '/accessibilita' | '/cookie' | '/privacy' | '/termini'
+  to:
+    | '/'
+    | '/accessibilita'
+    | '/condividi'
+    | '/cookie'
+    | '/privacy'
+    | '/termini'
+    | '/tag/$tag'
+  id:
+    | '__root__'
+    | '/'
+    | '/accessibilita'
+    | '/condividi'
+    | '/cookie'
+    | '/privacy'
+    | '/termini'
+    | '/tag/$tag'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccessibilitaRoute: typeof AccessibilitaRoute
+  CondividiRoute: typeof CondividiRoute
   CookieRoute: typeof CookieRoute
   PrivacyRoute: typeof PrivacyRoute
   TerminiRoute: typeof TerminiRoute
+  TagTagRoute: typeof TagTagRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -93,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/accessibilita'
       fullPath: '/accessibilita'
       preLoaderRoute: typeof AccessibilitaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/condividi': {
+      id: '/condividi'
+      path: '/condividi'
+      fullPath: '/condividi'
+      preLoaderRoute: typeof CondividiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookie': {
@@ -116,15 +165,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TerminiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tag/$tag': {
+      id: '/tag/$tag'
+      path: '/tag/$tag'
+      fullPath: '/tag/$tag'
+      preLoaderRoute: typeof TagTagRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccessibilitaRoute: AccessibilitaRoute,
+  CondividiRoute: CondividiRoute,
   CookieRoute: CookieRoute,
   PrivacyRoute: PrivacyRoute,
   TerminiRoute: TerminiRoute,
+  TagTagRoute: TagTagRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -282,7 +282,7 @@ function FilmChip({
         {movie.year}
         {movie.director ? ` · ${movie.director}` : ""}
       </p>
-      <Tags movie={movie} compact />
+      <Tags movie={movie} compact linked={false} />
     </button>
   );
 }

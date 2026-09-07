@@ -16,6 +16,7 @@ import { useQuiz } from "@/lib/store";
 import { AdSlot } from "@/components/ads/ad-slot";
 import { LegalFooter } from "@/components/legal/legal-footer";
 import { AppBar } from "@/components/quiz/app-bar";
+import { ShareBar } from "@/components/quiz/share-bar";
 import { Plot, Poster, Availability, Tags, useFilmMeta } from "@/components/quiz/film-card";
 
 export function Results() {
@@ -52,6 +53,15 @@ export function Results() {
             {archetype.name}
           </h1>
           <p className="mt-2 text-base text-muted">{archetype.line}</p>
+          <ShareBar
+            card={{
+              a: archetype.name,
+              l: archetype.line,
+              m: matches.map((item) => item.movie.id),
+              n: profile.answered,
+            }}
+            titles={matches.map((item) => item.movie.title)}
+          />
         </header>
 
         <section className="mt-6 flex flex-wrap items-center justify-between gap-3">
@@ -114,9 +124,9 @@ export function Results() {
         </section>
 
         <footer className="mt-12 flex flex-col gap-3 sm:flex-row">
-          {mode === "quiz" ? (
+          {mode === "quiz" || mode === "short" ? (
             <Button variant="secondary" onClick={() => goTo(0)} className="min-h-12">
-              Rifinisci il quiz
+              {mode === "short" ? "Rifai le 20 domande" : "Rifinisci il quiz"}
             </Button>
           ) : null}
           <Button variant="ghost" onClick={reset} className="min-h-12">

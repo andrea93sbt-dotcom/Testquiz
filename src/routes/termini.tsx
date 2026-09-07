@@ -31,7 +31,7 @@ function TermsPage() {
         Marchi, titoli e opere citati appartengono ai rispettivi titolari.
         Platea non rivendica diritti sui film. È lecito citarli per indicarli
         come possibile visione. Non offriamo copie né streaming. Il catalogo
-        di 5000 titoli usa titolo, anno, durata, genere, paese, regia, interpreti
+        di 5000 titoli usa titolo (in italiano se Wikidata lo ha), anno, durata, genere, paese, regia, interpreti
         e argomenti da fonti pubbliche (dataset IMDb e Wikidata). Locandine e trame, se ci sono,
         arrivano da Wikipedia (CC BY-SA). I link “dove vederlo” aprono
         JustWatch: non è un catalogo ufficiale delle piattaforme.

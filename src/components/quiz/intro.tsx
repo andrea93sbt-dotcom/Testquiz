@@ -12,6 +12,7 @@ import { blip, unlockAudio } from "@/game/sfx";
 
 export function Intro() {
   const start = useQuiz((s) => s.start);
+  const startShort = useQuiz((s) => s.startShort);
   const startSeen = useQuiz((s) => s.startSeen);
   const answers = useQuiz((s) => s.answers);
   const platforms = useQuiz((s) => s.platforms);
@@ -63,10 +64,10 @@ export function Intro() {
             Cosa vedi stasera.
           </h1>
           <p className="mt-4 max-w-md text-base leading-relaxed text-muted">
-            Due modi per profilare il gusto: cento domande in una piazza a quattro
-            cinema, oppure dieci turni con tre film da mettere sulla TV, sul tavolo
-            o nel cestino. {CATALOG_SIZE.toLocaleString("it-IT")} titoli, con i
-            generi del catalogo.
+            Tre modi: venti domande, cento nella piazza, oppure dieci turni con
+            tre film da mettere sulla TV, sul tavolo o nel cestino.{" "}
+            {CATALOG_SIZE.toLocaleString("it-IT")} titoli, in italiano quando
+            il titolo italiano esiste.
           </p>
           {platformLine ? <p className="mt-3 text-sm text-fg">{platformLine}</p> : null}
         </header>
@@ -83,6 +84,19 @@ export function Intro() {
           </label>
           <div className="flex flex-col gap-3">
             <Button
+              size="lg"
+              disabled={!canPlay}
+              className="min-h-14 w-full"
+              onClick={() => {
+                unlockAudio();
+                blip("start");
+                startShort();
+              }}
+            >
+              20 domande
+            </Button>
+            <Button
+              variant="secondary"
               size="lg"
               disabled={!canPlay}
               className="min-h-14 w-full"

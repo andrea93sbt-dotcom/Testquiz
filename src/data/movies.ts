@@ -138,6 +138,24 @@ export function movieById(id: string): Movie | undefined {
   return BY_ID.get(id);
 }
 
+const TAG_INDEX = new Map<string, { label: string; movies: Movie[] }>();
+for (const movie of MOVIES) {
+  for (const tag of movie.tags) {
+    const key = tag.toLowerCase();
+    let bucket = TAG_INDEX.get(key);
+    if (!bucket) {
+      bucket = { label: tag, movies: [] };
+      TAG_INDEX.set(key, bucket);
+    }
+    bucket.movies.push(movie);
+  }
+}
+
+export function moviesForTag(raw: string): { label: string; movies: Movie[] } {
+  const key = raw.trim().toLowerCase();
+  return TAG_INDEX.get(key) ?? { label: raw.trim(), movies: [] };
+}
+
 /** 10 rounds × 3 titles, each trio from different listed genres. */
 export function pickSeenTrios(seed = Date.now()): string[][] {
   const buckets = new Map<string, Movie[]>();

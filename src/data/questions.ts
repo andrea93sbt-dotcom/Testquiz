@@ -656,6 +656,16 @@ export const QUESTIONS: Question[] = [
   ]),
 ];
 
-if (QUESTIONS.length !== 100) {
-  throw new Error(`Expected 100 questions, got ${QUESTIONS.length}`);
+export const SHORT_QUESTION_IDS = [
+  1, 2, 12, 15, 23, 24, 32, 33, 43, 45, 51, 53, 62, 63, 71, 75, 82, 88, 92, 100,
+] as const;
+
+export function questionsFor(mode: "quiz" | "short"): Question[] {
+  if (mode !== "short") return QUESTIONS;
+  const byId = new Map(QUESTIONS.map((item) => [item.id, item]));
+  return SHORT_QUESTION_IDS.map((id) => byId.get(id)).filter((item): item is Question => Boolean(item));
+}
+
+if (questionsFor("short").length !== 20) {
+  throw new Error(`Expected 20 short questions, got ${questionsFor("short").length}`);
 }

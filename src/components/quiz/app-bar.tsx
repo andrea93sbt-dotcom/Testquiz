@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useAds } from "@/lib/ads-store";
 import { useQuiz } from "@/lib/store";
@@ -6,12 +7,18 @@ import { useQuiz } from "@/lib/store";
 export function AppBar() {
   const home = useQuiz((s) => s.home);
   const decline = useAds((s) => s.decline);
+  const navigate = useNavigate();
   const [askOff, setAskOff] = useState(false);
+
+  const toMenu = () => {
+    home();
+    void navigate({ to: "/" });
+  };
 
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between gap-3">
-        <Button variant="ghost" size="sm" className="min-h-11 px-2" onClick={home}>
+        <Button variant="ghost" size="sm" className="min-h-11 px-2" onClick={toMenu}>
           Menu
         </Button>
         <button
@@ -38,7 +45,7 @@ export function AppBar() {
               className="min-h-11"
               onClick={() => {
                 decline();
-                home();
+                toMenu();
               }}
             >
               Spegni

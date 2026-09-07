@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { QUESTIONS } from "@/data/questions";
+import { questionsFor } from "@/data/questions";
 import { pickSeenTrios } from "@/data/movies";
 import type { AnswerMap, Platform, SeenVerdict } from "@/data/types";
 import { optionIdsForPlatforms, platformsFromOptionIds } from "@/lib/platforms";
 
-export type Mode = "quiz" | "seen";
+export type Mode = "quiz" | "short" | "seen";
 export type Phase = "intro" | "platforms" | "quiz" | "seen" | "results";
 
 type PersistSlice = {
@@ -22,6 +22,7 @@ type PersistSlice = {
 
 type State = PersistSlice & {
   start: () => void;
+  startShort: () => void;
   startSeen: () => void;
   confirmPlatforms: () => void;
   setPlatforms: (platforms: Platform[]) => void;
@@ -53,10 +54,21 @@ const empty: PersistSlice = {
   seenVerdicts: {},
 };
 
-function clampIndex(n: unknown) {
+function deckLen(mode: Mode) {
+  if (mode === "seen") return 10;
+  return questionsFor(mode === "short" ? "short" : "quiz").length;
+}
+
+function clampIndex(n: unknown, mode: Mode) {
   const i = Number(n);
+  const max = Math.max(0, deckLen(mode) - 1);
   if (!Number.isFinite(i) || i < 0) return 0;
-  return Math.min(Math.floor(i), QUESTIONS.length - 1);
+  return Math.min(Math.floor(i), max);
+}
+
+function parseMode(value: unknown): Mode {
+  if (value === "seen" || value === "short") return value;
+  return "quiz";
 }
 
 export const useQuiz = create<State>()(
@@ -69,6 +81,15 @@ export const useQuiz = create<State>()(
           mode: "quiz",
           platformsReturn: "quiz",
           index: 0,
+          answers: {},
+        }),
+      startShort: () =>
+        set({
+          phase: "platforms",
+          mode: "short",
+          platformsReturn: "quiz",
+          index: 0,
+          answers: {},
         }),
       startSeen: () =>
         set({
@@ -104,8 +125,8 @@ export const useQuiz = create<State>()(
         set({ answers: nextAnswers });
       },
       next: () => {
-        const { index } = get();
-        if (index >= QUESTIONS.length - 1) {
+        const { index, mode } = get();
+        if (index >= deckLen(mode) - 1) {
           set({ phase: "results" });
           return;
         }
@@ -113,12 +134,14 @@ export const useQuiz = create<State>()(
       },
       prev: () => set({ index: Math.max(0, get().index - 1) }),
       skip: () => get().next(),
-      goTo: (index) =>
+      goTo: (index) => {
+        const mode = get().mode === "short" ? "short" : "quiz";
         set({
-          index: clampIndex(index),
+          index: clampIndex(index, mode),
           phase: "quiz",
-          mode: "quiz",
-        }),
+          mode,
+        });
+      },
       finish: () => set({ phase: "results" }),
       reset: () => set({ ...empty }),
       editPlatforms: () => set({ phase: "platforms", platformsReturn: "results" }),
@@ -133,11 +156,12 @@ export const useQuiz = create<State>()(
           });
           return;
         }
-        if (s.index >= QUESTIONS.length) {
-          set({ phase: "results" });
+        const mode = s.mode === "short" ? "short" : "quiz";
+        if (s.index >= deckLen(mode)) {
+          set({ phase: "results", mode });
           return;
         }
-        set({ phase: "quiz", index: clampIndex(s.index) });
+        set({ phase: "quiz", mode, index: clampIndex(s.index, mode) });
       },
       placeSeen: (movieId, verdict) =>
         set({ seenVerdicts: { ...get().seenVerdicts, [movieId]: verdict } }),
@@ -158,7 +182,7 @@ export const useQuiz = create<State>()(
     {
       name: "platea-quiz",
       skipHydration: true,
-      version: 4,
+      version: 5,
       partialize: (s): PersistSlice => ({
         phase: s.phase,
         mode: s.mode,
@@ -172,12 +196,13 @@ export const useQuiz = create<State>()(
       }),
       migrate: (persisted) => {
         const p = (persisted ?? {}) as Partial<PersistSlice>;
-        const index = clampIndex(p.index);
+        const mode = parseMode(p.mode);
+        const index = clampIndex(p.index, mode);
         let phase: Phase = p.phase ?? "intro";
         if (phase !== "intro" && phase !== "platforms" && phase !== "quiz" && phase !== "seen" && phase !== "results") {
           phase = "intro";
         }
-        if (phase === "quiz" && (Number(p.index) || 0) >= QUESTIONS.length) phase = "results";
+        if (phase === "quiz" && (Number(p.index) || 0) >= deckLen(mode)) phase = "results";
         const seenTrios = Array.isArray(p.seenTrios) ? p.seenTrios.filter((t) => Array.isArray(t)) : [];
         let seenRound = Math.max(0, Number(p.seenRound) || 0);
         if (phase === "seen" && seenTrios.length === 0) phase = "intro";
@@ -187,7 +212,7 @@ export const useQuiz = create<State>()(
           ...p,
           index,
           phase,
-          mode: p.mode === "seen" ? "seen" : "quiz",
+          mode,
           seenRound,
           seenTrios,
           seenVerdicts: p.seenVerdicts && typeof p.seenVerdicts === "object" ? p.seenVerdicts : {},

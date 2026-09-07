@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { loadFilmMeta, type FilmMeta } from "@/lib/film-meta";
 import type { Movie, Platform } from "@/data/types";
 import { PLATFORM_META } from "@/data/types";
@@ -55,17 +56,34 @@ export function Poster({
   );
 }
 
-export function Tags({ movie, compact }: { movie: Movie; compact?: boolean }) {
+export function Tags({
+  movie,
+  compact,
+  linked = true,
+}: {
+  movie: Movie;
+  compact?: boolean;
+  linked?: boolean;
+}) {
   const tags = compact ? movie.tags.slice(0, 6) : movie.tags;
   if (!tags.length) return null;
+  const chip =
+    "inline-flex min-h-10 items-center rounded-sm border border-border bg-raised px-2 py-0.5 text-xs leading-snug text-muted";
   return (
     <ul className="mt-2 flex flex-wrap gap-1.5">
       {tags.map((t) => (
-        <li
-          key={t}
-          className="rounded-sm border border-border bg-raised px-2 py-0.5 text-[11px] leading-snug text-muted"
-        >
-          {t}
+        <li key={t}>
+          {linked ? (
+            <Link
+              to="/tag/$tag"
+              params={{ tag: t }}
+              className={`${chip} transition-colors duration-150 hover:border-accent hover:text-fg`}
+            >
+              {t}
+            </Link>
+          ) : (
+            <span className={chip}>{t}</span>
+          )}
         </li>
       ))}
     </ul>
