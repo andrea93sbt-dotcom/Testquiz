@@ -30,8 +30,11 @@ function TermsPage() {
       <p>
         Marchi, titoli e opere citati appartengono ai rispettivi titolari.
         Platea non rivendica diritti sui film. È lecito citarli per indicarli
-        come possibile visione. Non offriamo copie, streaming né poster
-        protetti.
+        come possibile visione. Non offriamo copie né streaming. Le locandine,
+        le trame e la disponibilità in Italia arrivano da TMDB (dati JustWatch)
+        e, se manca, da Wikipedia (CC BY-SA). Non è un catalogo ufficiale delle
+        piattaforme. Platea usa l'API di TMDB ma non è affiliata né certificata
+        da TMDB.
       </p>
 
       <h2>4. Pubblicità</h2>

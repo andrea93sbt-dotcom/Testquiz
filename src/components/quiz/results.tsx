@@ -16,6 +16,7 @@ import { AdSlot } from "@/components/ads/ad-slot";
 import { LegalFooter } from "@/components/legal/legal-footer";
 import { QuoteScatter } from "@/components/quiz/quote-scatter";
 import { AppBar } from "@/components/quiz/app-bar";
+import { Plot, Poster, Availability, useFilmMeta } from "@/components/quiz/film-card";
 
 export function Results() {
   const answers = useQuiz((s) => s.answers);
@@ -78,28 +79,7 @@ export function Results() {
       </section>
 
       {tonight ? (
-        <section className="mt-12 rounded-xl border border-border bg-surface p-6 sm:p-8">
-          <h2 className="font-display text-3xl italic leading-tight text-fg">
-            {tonight.movie.title}
-          </h2>
-          <Meta movie={tonight.movie} />
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted">
-            {tonight.movie.synopsis}
-          </p>
-          {tonight.reasons.length ? (
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {tonight.reasons.map((r) => (
-                <li
-                  key={r}
-                  className="rounded-full border border-border px-3 py-1 text-xs text-muted"
-                >
-                  {r}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          <SearchRow movie={tonight.movie} platforms={tonight.overlap.length ? tonight.overlap : owned} />
-        </section>
+        <Tonight movie={tonight.movie} reasons={tonight.reasons} owned={owned} platforms={tonight.overlap.length ? tonight.overlap : owned} />
       ) : (
         <p className="mt-12 text-muted">Rispondi ad alcune domande.</p>
       )}
@@ -110,19 +90,12 @@ export function Results() {
         <ol className="divide-y divide-border border-y border-border">
           {matches.slice(1).map((m, i) => (
             <li key={m.movie.id} className="py-6">
-              <div className="flex items-baseline justify-between gap-3">
-                <h3 className="font-display text-xl italic text-fg">
-                  <span className="mr-3 font-mono text-xs not-italic text-subtle">
-                    {i + 2}
-                  </span>
-                  {m.movie.title}
-                </h3>
-                <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">
-                  {m.movie.year}
-                </span>
-              </div>
-              <Meta movie={m.movie} />
-              <SearchRow movie={m.movie} platforms={m.overlap} compact />
+              <MovieRow
+                movie={m.movie}
+                index={i + 2}
+                platforms={m.overlap}
+                owned={owned}
+              />
             </li>
           ))}
         </ol>
@@ -159,6 +132,88 @@ export function Results() {
         <LegalFooter />
       </div>
     </main>
+    </div>
+  );
+}
+
+function Tonight({
+  movie,
+  reasons,
+  platforms,
+  owned,
+}: {
+  movie: Movie;
+  reasons: string[];
+  platforms: Platform[];
+  owned: Platform[];
+}) {
+  const meta = useFilmMeta(movie);
+  return (
+    <section className="mt-12 rounded-xl border border-border bg-surface p-5 sm:p-8">
+      <div className="flex flex-col gap-5 sm:flex-row">
+        <Poster movie={movie} meta={meta} size="hero" />
+        <div className="min-w-0 flex-1">
+          <h2 className="font-display text-3xl italic leading-tight text-fg">
+            {movie.title}
+          </h2>
+          <Meta movie={movie} />
+          <div className="mt-4">
+            <Plot movie={movie} meta={meta} />
+          </div>
+          <Availability meta={meta} owned={owned} />
+          {reasons.length ? (
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {reasons.map((r) => (
+                <li
+                  key={r}
+                  className="rounded-full border border-border px-3 py-1 text-xs text-muted"
+                >
+                  {r}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <SearchRow movie={movie} platforms={platforms} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MovieRow({
+  movie,
+  index,
+  platforms,
+  owned,
+}: {
+  movie: Movie;
+  index: number;
+  platforms: Platform[];
+  owned: Platform[];
+}) {
+  const meta = useFilmMeta(movie);
+  return (
+    <div className="flex gap-4">
+      <Poster movie={movie} meta={meta} size="row" />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="font-display text-xl italic text-fg">
+            <span className="mr-3 font-mono text-xs not-italic text-subtle">
+              {index}
+            </span>
+            {movie.title}
+          </h3>
+          <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">
+            {movie.year}
+          </span>
+        </div>
+        <Meta movie={movie} />
+        <div className="mt-2">
+          <Plot movie={movie} meta={meta} compact />
+        </div>
+        <Availability meta={meta} owned={owned} compact />
+        <SearchRow movie={movie} platforms={platforms} compact />
+      </div>
     </div>
   );
 }

@@ -50,6 +50,12 @@ function PrivacyPage() {
           se accetti gli annunci, Google può trattare identificatori, IP
           approssimato e dati di navigazione secondo la sua informativa.
         </li>
+        <li>
+          nei risultati il server chiede a TMDB (The Movie Database) locandina,
+          trama e dove il titolo è visibile in Italia. Passiamo solo titolo e
+          anno, non le tue risposte. Se TMDB non risponde, il browser può
+          chiedere la stessa cosa a Wikipedia.
+        </li>
       </ul>
       <p>
         Non trattiamo categorie particolari di dati. Non profiliamo i gusti
@@ -75,7 +81,8 @@ function PrivacyPage() {
 
       <h2>4. Trasferimenti extra-SEE</h2>
       <p>
-        Il servizio di base non trasferisce dati. Se accetti gli annunci,
+        Il servizio di base non trasferisce dati personali. Per i risultati
+        film, TMDB (Stati Uniti) riceve titolo e anno. Se accetti gli annunci,
         Google LLC (Stati Uniti) può trattare dati. Google aderisce al Data
         Privacy Framework UE-USA e usa clausole contrattuali tipo. Senza
         consenso, lo script di AdSense non viene caricato.
