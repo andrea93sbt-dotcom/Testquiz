@@ -1,5 +1,4 @@
-import { CHAPTERS } from "@/data/chapters";
-import { MOVIES } from "@/data/movies";
+import { MOVIES, movieById } from "@/data/movies";
 import { QUESTIONS } from "@/data/questions";
 import {
   AXES,
@@ -9,6 +8,7 @@ import {
   type Flags,
   type Movie,
   type Platform,
+  type SeenVerdict,
   type Weights,
 } from "@/data/types";
 
@@ -16,6 +16,7 @@ export type Profile = {
   vector: Record<Axis, number>;
   flags: Flags;
   answered: number;
+  seen: Record<string, SeenVerdict>;
 };
 
 export type Match = {
@@ -88,11 +89,17 @@ const AXIS_LABEL: Record<Axis, string> = {
   lungo: "durata lunga",
 };
 
+export { AXIS_LABEL };
+
 export function emptyVector(): Record<Axis, number> {
   return Object.fromEntries(AXES.map((a) => [a, 0])) as Record<Axis, number>;
 }
 
-export function buildProfile(answers: AnswerMap, subscribed: Platform[] = []): Profile {
+export function buildProfile(
+  answers: AnswerMap,
+  subscribed: Platform[] = [],
+  seen: Record<string, SeenVerdict> = {},
+): Profile {
   const vector = emptyVector();
   const flags: Flags = {
     platforms: [],
@@ -144,11 +151,29 @@ export function buildProfile(answers: AnswerMap, subscribed: Platform[] = []): P
     }
   }
 
+  for (const [id, verdict] of Object.entries(seen)) {
+    const movie = movieById(id);
+    if (!movie) continue;
+    if (verdict === "unseen") continue;
+    answered += 1;
+    const scale = verdict === "like" ? 2.4 : -1.6;
+    for (const [axis, value] of Object.entries(movie.v) as [Axis, number][]) {
+      vector[axis] += value * scale;
+    }
+    if (verdict === "dislike") {
+      const top = Object.entries(movie.v)
+        .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))
+        .slice(0, 1)
+        .map(([axis]) => axis as Axis);
+      flags.avoid = [...new Set([...(flags.avoid ?? []), ...top])];
+    }
+  }
+
   if (subscribed.length) {
     flags.platforms = [...new Set([...subscribed, ...(flags.platforms ?? [])])];
   }
 
-  return { vector, flags, answered };
+  return { vector, flags, answered, seen };
 }
 
 export function topAxes(vector: Record<Axis, number>, n = 6): { axis: Axis; value: number }[] {
@@ -192,37 +217,16 @@ export function pickArchetype(vector: Record<Axis, number>): Archetype {
     },
     {
       name: "Realista da sala",
-      line: "Storie italiane, volti, niente smalto da export.",
-      axes: ["italiano", "dramma", "vero", "crime"],
+      line: "Persone vere, nodi sporchi, niente costume.",
+      axes: ["vero", "biografico", "dramma", "crime"],
     },
     {
-      name: "Cartografo",
-      line: "Il sottotitolo non è un ostacolo, è un passaporto.",
-      axes: ["asia", "europa", "stilizzato", "complesso"],
-    },
-    {
-      name: "Cronista del sottobosco",
-      line: "Potere, lealtà, e il conto che arriva sempre.",
-      axes: ["crime", "cinico", "potere", "thriller", "oscuro"],
-    },
-    {
-      name: "Fiaba adulta",
-      line: "Disegno, meraviglia, e un fondo che i bambini non vedono.",
-      axes: ["animazione", "famiglia", "fantasy", "speranza"],
-    },
-    {
-      name: "Custode della pellicola",
-      line: "Il nuovo va bene, ma il mestiere vecchio tiene ancora.",
-      axes: ["classico", "hollywood", "italiano"],
-    },
-    {
-      name: "Fuori registro",
-      line: "Vuoi uscire dalla corsia, non solo cambiare canale.",
-      axes: ["strano", "stilizzato", "ironico", "complesso"],
+      name: "Viaggiatore d'altri cinema",
+      line: "Fuori dal circuito più rumoroso.",
+      axes: ["europa", "asia", "italiano", "classico"],
     },
   ];
-
-  let best = packs[packs.length - 1]!;
+  let best = packs[0]!;
   let bestScore = -1;
   for (const pack of packs) {
     const score = pack.axes.reduce((n, axis) => n + (vector[axis] ?? 0), 0);
@@ -231,22 +235,19 @@ export function pickArchetype(vector: Record<Axis, number>): Archetype {
       bestScore = score;
     }
   }
-  if (bestScore < 6) {
-    return { name: "Spettatore onnivoro", line: "Niente etichetta stretta: stasera conta che sia vivo." };
-  }
   return { name: best.name, line: best.line };
 }
 
-function cosine(a: Record<Axis, number>, b: Weights): number {
+function cosine(a: Record<Axis, number>, b: Weights) {
   let dot = 0;
   let na = 0;
   let nb = 0;
   for (const axis of AXES) {
-    const av = a[axis];
-    const bv = b[axis] ?? 0;
-    dot += av * bv;
-    na += av * av;
-    nb += bv * bv;
+    const va = a[axis] ?? 0;
+    const vb = b[axis] ?? 0;
+    dot += va * vb;
+    na += va * va;
+    nb += vb * vb;
   }
   if (na === 0 || nb === 0) return 0;
   return dot / (Math.sqrt(na) * Math.sqrt(nb));
@@ -270,14 +271,12 @@ function reasonsFor(movie: Movie, profile: Profile): string[] {
   if (on.length) {
     out.push(`Priorità su ${on.map((p) => PLATFORM_META[p].label).join(", ")}`);
   }
-  if (movie.rating && movie.rating >= 8) {
-    out.push(`IMDb ${movie.rating.toFixed(1)}`);
-  }
+  if (movie.tags.length) out.push(movie.tags.slice(0, 3).join(" · "));
   return out.slice(0, 3);
 }
 
 export function rankMovies(profile: Profile): Match[] {
-  const { vector, flags } = profile;
+  const { vector, flags, seen } = profile;
   const owned = new Set(flags.platforms ?? []);
 
   return MOVIES.map((movie) => {
@@ -308,7 +307,11 @@ export function rankMovies(profile: Profile): Match[] {
     } else if (movie.platforms.length && owned.size && overlap.length === 0) {
       score *= 0.68;
     }
-    if (movie.rating) score += (movie.rating - 6.8) * 1.8;
+
+    const verdict = seen[movie.id];
+    if (verdict === "dislike") score *= 0.02;
+    else if (verdict === "like") score *= 0.42;
+    else if (verdict === "unseen") score *= 1.06;
 
     return {
       movie,
@@ -325,44 +328,23 @@ export function searchRecipes(profile: Profile, matches: Match[]): SearchRecipe[
   const axes = topAxes(profile.vector, 5).map((t) => AXIS_LABEL[t.axis]);
   const first = matches[0]?.movie;
   const q1 = axes.slice(0, 3).join(" ");
-  const q2 = first
-    ? `${first.title} ${first.year} streaming`
-    : "film da vedere stasera";
-  const q3 = [
-    profile.flags.company === "famiglia" ? "film famiglia" : "film",
-    axes[0] ?? "da vedere",
-    "streaming Italia",
-  ].join(" ");
-
-  const make = (label: string, query: string): SearchRecipe => ({
+  const q2 = first ? `${first.title} ${first.year} streaming` : q1;
+  const mk = (label: string, query: string): SearchRecipe => ({
     label,
     query,
-    justwatch: `https://www.justwatch.com/it/cerca?q=${encodeURIComponent(query)}`,
-    google: `https://www.google.com/search?q=${encodeURIComponent(`${query} dove vederlo streaming`)}`,
+    justwatch: `https://www.justwatch.com/it/ricerca?q=${encodeURIComponent(query)}`,
+    google: `https://www.google.com/search?q=${encodeURIComponent(query + " film streaming")}`,
   });
-
   return [
-    make("Ricerca su misura", q1 || "film streaming"),
-    make("Il titolo di stasera", q2),
-    make("Sulle tue piattaforme", q3),
+    mk("Cerca per tono", q1 || "film stasera"),
+    mk("Parti da un titolo vicino", q2),
   ];
 }
 
-export function movieSearchLinks(movie: Movie, platforms: Platform[]) {
-  const q = movie.originalTitle ? `${movie.title} ${movie.originalTitle}` : movie.title;
-  const justwatch = `https://www.justwatch.com/it/cerca?q=${encodeURIComponent(movie.title)}`;
-  const google = `https://www.google.com/search?q=${encodeURIComponent(`${movie.title} ${movie.year} streaming Italia`)}`;
-  const platformLinks = (platforms.length ? platforms : movie.platforms).map((p) => ({
-    id: p,
-    label: PLATFORM_META[p].label,
-    href: PLATFORM_META[p].search(q),
-  }));
-  return { justwatch, google, platformLinks };
+export function movieSearchLinks(movie: Movie, _platforms: Platform[] = []) {
+  const q = `${movie.title} ${movie.year}`;
+  return {
+    justwatch: `https://www.justwatch.com/it/ricerca?q=${encodeURIComponent(q)}`,
+    google: `https://www.google.com/search?q=${encodeURIComponent(q + " dove vederlo")}`,
+  };
 }
-
-export function chapterOf(id: number) {
-  const q = QUESTIONS.find((x) => x.id === id);
-  return CHAPTERS.find((c) => c.id === q?.ch) ?? CHAPTERS[0];
-}
-
-export { AXIS_LABEL };

@@ -2,35 +2,35 @@
 @import "@fontsource-variable/figtree";
 @import "@fontsource/instrument-serif/400.css";
 @import "@fontsource/instrument-serif/400-italic.css";
-@import "@fontsource/press-start-2p/400.css";
+@import "@fontsource/press-start-2p";
 
 @theme {
-  --color-bg: #140a22;
-  --color-surface: #24143c;
-  --color-raised: #3d2462;
-  --color-fg: #f4ead5;
-  --color-muted: #c9b8e8;
-  --color-subtle: #8a74b0;
-  --color-accent: #f4c430;
-  --color-accent-fg: #1a0c08;
-  --color-ticket: #e23d4a;
-  --color-paper: #f4ead5;
-  --color-paper-fg: #24143c;
-  --color-border: color-mix(in oklab, var(--color-accent) 40%, transparent);
-  --color-border-strong: color-mix(in oklab, var(--color-accent) 70%, transparent);
-  --color-danger: #e23d4a;
-  --color-ok: #2ec4b6;
+  --color-bg: #140a1c;
+  --color-surface: #2a1434;
+  --color-raised: #3d1e4a;
+  --color-fg: #f8efd8;
+  --color-muted: #d7c4a4;
+  --color-subtle: #b39278;
+  --color-accent: #f0c43a;
+  --color-accent-fg: #2a1400;
+  --color-ticket: #e24b6e;
+  --color-paper: #f3e6c4;
+  --color-paper-fg: #3a160e;
+  --color-border: color-mix(in oklab, var(--color-fg) 18%, transparent);
+  --color-border-strong: color-mix(in oklab, var(--color-fg) 36%, transparent);
+  --color-danger: #e24b6e;
+  --color-ok: #3ec9b0;
 
   --font-display: "Instrument Serif", "Times New Roman", serif;
   --font-sans: "Figtree Variable", "Figtree", "Segoe UI", system-ui, sans-serif;
   --font-pixel: "Press Start 2P", ui-monospace, monospace;
-  --font-mono: "Press Start 2P", ui-monospace, monospace;
+  --font-mono: ui-monospace, "SFMono-Regular", monospace;
 
   --radius-xs: 2px;
   --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 }
 
 @layer base {
@@ -48,21 +48,11 @@
     font-family: var(--font-sans);
     line-height: 1.5;
     background-color: var(--color-bg);
-    background-image:
-      linear-gradient(180deg, color-mix(in oklab, #2ec4b6 10%, transparent), transparent 28%),
-      radial-gradient(ellipse 50% 28% at 50% 0%, color-mix(in oklab, var(--color-ticket) 18%, transparent), transparent 70%),
-      repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 3px,
-        color-mix(in oklab, black 18%, transparent) 3px,
-        color-mix(in oklab, black 18%, transparent) 4px
-      );
   }
   h1, h2, h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.03em;
-    line-height: 1.15;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -72,52 +62,22 @@
 
 .font-pixel {
   font-family: var(--font-pixel);
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 .pixel-panel {
-  border: 2px solid var(--color-accent);
-  background: color-mix(in oklab, var(--color-surface) 94%, black);
-  box-shadow: 4px 4px 0 #0a0414;
+  border: 2px solid var(--color-border-strong);
+  background: var(--color-surface);
+  box-shadow: 4px 4px 0 color-mix(in oklab, black 45%, transparent);
 }
 
 .pixel-chip {
-  border: 2px solid var(--color-accent);
-  background: color-mix(in oklab, var(--color-bg) 82%, black);
-  box-shadow: 3px 3px 0 #0a0414;
-}
-
-.blink-start {
-  animation: blink-start 1.05s steps(2, jump-none) infinite;
-}
-
-@keyframes blink-start {
-  50% { opacity: 0.28; }
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
 }
 
 .marquee {
-  animation: marquee-glow 1.4s ease-in-out infinite;
-}
-
-@keyframes marquee-glow {
-  0%, 100% { box-shadow: 4px 4px 0 #0a0414, 0 0 0 0 color-mix(in oklab, var(--color-accent) 0%, transparent); }
-  50% { box-shadow: 4px 4px 0 #0a0414, 0 0 12px color-mix(in oklab, var(--color-accent) 45%, transparent); }
-}
-
-.scanlines::after {
-  content: "";
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 2px,
-    rgba(0, 0, 0, 0.12) 2px,
-    rgba(0, 0, 0, 0.12) 3px
-  );
-  mix-blend-mode: multiply;
+  box-shadow: 0 0 0 2px var(--color-accent), 4px 4px 0 color-mix(in oklab, black 45%, transparent);
 }
 
 .rise-in {
@@ -127,26 +87,6 @@
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
-
-.hero-walk {
-  width: 64px;
-  height: 64px;
-  background-image: url("/sprites/hero.png");
-  background-repeat: no-repeat;
-  background-size: 256px 256px;
-  image-rendering: pixelated;
-  animation: hero-walk 0.55s steps(4) infinite;
-}
-
-@keyframes hero-walk {
-  from { background-position: 0 0; }
-  to { background-position: -256px 0; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .rise-in,
-  .blink-start,
-  .marquee,
-  .hero-walk { animation: none; }
-  .scanlines::after { display: none; }
+  .rise-in { animation: none; }
 }

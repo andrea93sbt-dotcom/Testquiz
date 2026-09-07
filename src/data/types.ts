@@ -143,6 +143,8 @@ export type Chapter = {
   subtitle: string;
 };
 
+export type SeenVerdict = "like" | "dislike" | "unseen";
+
 export type Movie = {
   id: string;
   title: string;
@@ -155,9 +157,10 @@ export type Movie = {
   synopsis: string;
   v: Weights;
   kidsOk?: boolean;
-  rating?: number;
-  votes?: number;
+  tags: string[];
   genres?: string[];
+  actors?: string[];
+  subjects?: string[];
 };
 
 export type AnswerMap = Record<number, string[]>;

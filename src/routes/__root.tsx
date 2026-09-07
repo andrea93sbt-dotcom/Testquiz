@@ -18,7 +18,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Cento domande e 5000 film tra i più votati su IMDb, per trovare cosa vedere stasera.",
+          "Cento domande, oppure dieci turni su film che hai già visto, per trovare cosa vedere stasera.",
       },
       { name: "theme-color", content: "#2a1030" },
       { name: "google-adsense-account", content: ADS_CONFIG.client },

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { Option } from "@/data/types";
 import { blip, unlockAudio } from "@/game/sfx";
-import { cn } from "@/lib/utils";
 
 const IW = 320;
 const IH = 360;
@@ -68,6 +67,7 @@ type Game = {
   probe: boolean;
   demo: boolean;
   reduce: boolean;
+  lock: boolean;
 };
 
 export function Arena({ question, hint, options, progress, demo, onPick, onSkip }: Props) {
@@ -96,6 +96,7 @@ export function Arena({ question, hint, options, progress, demo, onPick, onSkip 
     probe: false,
     demo: Boolean(demo),
     reduce: false,
+    lock: false,
   });
   stateRef.current.opts = options.slice(0, 4);
   stateRef.current.demo = Boolean(demo);
@@ -107,6 +108,7 @@ export function Arena({ question, hint, options, progress, demo, onPick, onSkip 
     s.burst = 0;
     s.pending = null;
     s.trauma = 0;
+    if (s.keys.size === 0) s.lock = false;
   }, [question]);
 
   useEffect(() => {
@@ -159,15 +161,24 @@ export function Arena({ question, hint, options, progress, demo, onPick, onSkip 
     const onKey = (e: KeyboardEvent) => {
       const dir = dirFromCode(e.code);
       if (!dir) return;
+      if (e.repeat) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
       s.probe = false;
       s.keys.add(e.code);
+      if (s.lock) return;
       tryWalk(s, dir, false);
     };
     const onUp = (e: KeyboardEvent) => {
       s.keys.delete(e.code);
+      if (s.keys.size === 0) s.lock = false;
     };
-    const onBlur = () => s.keys.clear();
+    const onBlur = () => {
+      s.keys.clear();
+      s.lock = false;
+    };
 
     const startP = (e: PointerEvent) => {
       if ((e.target as HTMLElement).closest("[data-dir]")) return;
@@ -243,16 +254,18 @@ export function Arena({ question, hint, options, progress, demo, onPick, onSkip 
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
-      <div className="pixel-panel px-3 py-3">
-        <p className="text-sm leading-snug text-fg">{question}</p>
-        {hint ? <p className="mt-1 font-pixel text-[8px] text-ok">{hint}</p> : null}
+      <div className="rounded-md border border-border bg-surface px-3 py-3 sm:px-4">
+        <p className="text-base leading-snug text-fg sm:text-lg">{question}</p>
+        {hint ? <p className="mt-1.5 text-sm text-muted">{hint}</p> : null}
       </div>
       <div
         ref={wrapRef}
-        className="relative min-h-[20rem] flex-1 touch-none overflow-hidden pixel-panel bg-bg"
+        className="relative min-h-[16rem] flex-1 touch-none overflow-hidden rounded-md border border-border bg-bg sm:min-h-[18rem]"
         style={{ imageRendering: "pixelated" }}
       >
         <canvas ref={canvasRef} className="block h-full w-full" />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
         {DIRS.map((dir, i) => {
           const opt = opts[i];
           if (!opt) return null;
@@ -267,16 +280,10 @@ export function Arena({ question, hint, options, progress, demo, onPick, onSkip 
                 stateRef.current.probe = false;
                 tryWalk(stateRef.current, dir, false);
               }}
-              className={cn(
-                "absolute z-10 max-w-[9.5rem] pixel-chip px-2 py-1.5 text-left text-[11px] leading-tight text-fg",
-                dir === "up" && "top-2 left-1/2 -translate-x-1/2",
-                dir === "down" && "bottom-2 left-1/2 -translate-x-1/2",
-                dir === "left" && "top-1/2 left-2 -translate-y-1/2",
-                dir === "right" && "top-1/2 right-2 -translate-y-1/2",
-              )}
+              className="min-h-14 rounded-md border border-border bg-raised px-3 py-2.5 text-left text-sm leading-snug text-fg hover:border-accent"
               style={{ borderColor: MARQUEE[i] }}
             >
-              <span className="mr-1 font-pixel text-[9px]" style={{ color: MARQUEE[i] }}>
+              <span className="mr-1.5 text-xs font-semibold" style={{ color: MARQUEE[i] }}>
                 {ARROW[dir]}
               </span>
               {opt.label}
@@ -285,19 +292,17 @@ export function Arena({ question, hint, options, progress, demo, onPick, onSkip 
         })}
       </div>
       {demo ? (
-        <p className="font-pixel text-[8px] leading-relaxed text-subtle">
-          PC: frecce / WASD · Telefono: swipe
-        </p>
+        <p className="text-xs text-subtle">PC: frecce o WASD · Telefono: swipe verso una sala</p>
       ) : (
         <div className="flex items-center justify-between gap-3">
-          <p className="font-pixel text-[8px] leading-relaxed text-muted">{progress}</p>
+          <p className="text-xs text-muted">{progress}</p>
           <button
             type="button"
             onClick={() => {
               blip("skip");
               skipRef.current?.();
             }}
-            className="min-h-11 px-3 font-pixel text-[9px] text-subtle underline-offset-2 hover:text-fg hover:underline"
+            className="min-h-11 px-3 text-sm text-subtle underline-offset-2 hover:text-fg hover:underline"
           >
             Salta
           </button>
@@ -307,14 +312,17 @@ export function Arena({ question, hint, options, progress, demo, onPick, onSkip 
   );
 }
 
+let SPRITE_CACHE: Sprites | null = null;
+
 function loadSprites(): Sprites {
+  if (SPRITE_CACHE) return SPRITE_CACHE;
   const make = (src: string) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = src;
     return img;
   };
-  return {
+  SPRITE_CACHE = {
     hero: make("/sprites/hero.png"),
     cinema: make("/sprites/cinema.png"),
     tiles: make("/sprites/tiles.png"),
@@ -323,6 +331,7 @@ function loadSprites(): Sprites {
     arrows: make("/sprites/arrows.png"),
     props: make("/sprites/props.png"),
   };
+  return SPRITE_CACHE;
 }
 
 function fit(wrap: HTMLElement, canvas: HTMLCanvasElement) {
@@ -332,10 +341,8 @@ function fit(wrap: HTMLElement, canvas: HTMLCanvasElement) {
   const scale = Math.max(1, Math.floor(Math.min(w / IW, h / IH)));
   const bw = Math.max(1, Math.floor(w * dpr));
   const bh = Math.max(1, Math.floor(h * dpr));
-  if (canvas.width !== bw || canvas.height !== bh) {
-    canvas.width = bw;
-    canvas.height = bh;
-  }
+  if (canvas.width !== bw) canvas.width = bw;
+  if (canvas.height !== bh) canvas.height = bh;
   const ox = Math.floor((w - IW * scale) / 2);
   const oy = Math.floor((h - IH * scale) / 2);
   return { ox, oy, scale, dpr };
@@ -350,7 +357,7 @@ function dirFromCode(code: string): Dir | null {
 }
 
 function tryWalk(s: Game, dir: Dir, probe: boolean) {
-  if (s.walk || s.pending) return;
+  if (s.walk || s.pending || (s.lock && !probe)) return;
   const idx = DIRS.indexOf(dir);
   if (idx < 0 || !s.opts[idx]) return;
   blip("step");
@@ -408,6 +415,7 @@ function tick(s: Game, dt: number, onPick?: (id: string) => void) {
   s.face = "down";
   if (opt) {
     blip("ok");
+    s.lock = true;
     s.pending = opt.id;
     s.pendingIn = 0.2;
   }
@@ -447,7 +455,7 @@ function hitCinema(e: PointerEvent, wrap: HTMLElement): Dir | null {
 }
 
 function seedSparks(s: Game) {
-  s.sparks = Array.from({ length: 36 }, () => {
+  s.sparks = Array.from({ length: 14 }, () => {
     const sp: Spark = { x: 0, y: 0, vx: 0, vy: 0, life: 0, color: "#f4c430" };
     respawnSpark(sp, Math.random() * 10);
     return sp;
@@ -637,13 +645,7 @@ function drawCinema(
     ctx.globalAlpha = 1;
   }
   if (sprites?.cinema?.complete) {
-    ctx.save();
-    if (hot) {
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 14;
-    }
     ctx.drawImage(sprites.cinema, x - 38, y - 54, 76, 76);
-    ctx.restore();
   } else {
     ctx.fillStyle = "#3d2462";
     ctx.fillRect(x - 28, y - 40, 56, 48);

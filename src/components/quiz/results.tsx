@@ -16,16 +16,18 @@ import { useQuiz } from "@/lib/store";
 import { AdSlot } from "@/components/ads/ad-slot";
 import { LegalFooter } from "@/components/legal/legal-footer";
 import { AppBar } from "@/components/quiz/app-bar";
-import { Plot, Poster, Availability, useFilmMeta } from "@/components/quiz/film-card";
+import { Plot, Poster, Availability, Tags, useFilmMeta } from "@/components/quiz/film-card";
 
 export function Results() {
   const answers = useQuiz((s) => s.answers);
   const platforms = useQuiz((s) => s.platforms);
+  const seenVerdicts = useQuiz((s) => s.seenVerdicts);
   const reset = useQuiz((s) => s.reset);
   const goTo = useQuiz((s) => s.goTo);
   const editPlatforms = useQuiz((s) => s.editPlatforms);
+  const mode = useQuiz((s) => s.mode);
 
-  const profile = buildProfile(answers, platforms);
+  const profile = buildProfile(answers, platforms, seenVerdicts);
   const matches = rankMovies(profile).slice(0, 12);
   const tonight = matches[0];
   const archetype = pickArchetype(profile.vector);
@@ -39,12 +41,12 @@ export function Results() {
       : "Nessun abbonamento";
 
   return (
-    <div className="relative min-h-dvh scanlines">
+    <div className="relative min-h-dvh">
       <main id="contenuto" className="relative z-10 mx-auto max-w-xl px-4 py-8 sm:px-8 sm:py-12">
         <AppBar />
         <header className="rise-in">
-          <p className="font-pixel text-[9px] tracking-[0.22em] text-ticket">
-            FINE ATTO · {profile.answered} XP · {CATALOG_SIZE.toLocaleString("it-IT")} FILM
+          <p className="text-xs font-medium tracking-[0.18em] text-ticket uppercase">
+            {profile.answered} risposte · {CATALOG_SIZE.toLocaleString("it-IT")} film
           </p>
           <h1 className="mt-4 font-display text-4xl italic leading-[1.08] text-fg md:text-5xl">
             {archetype.name}
@@ -53,9 +55,9 @@ export function Results() {
         </header>
 
         <section className="mt-6 flex flex-wrap items-center justify-between gap-3">
-          <p className="font-pixel text-[8px] text-ok">{platformLine}</p>
-          <Button variant="secondary" size="sm" className="min-h-11 font-pixel text-[8px]" onClick={editPlatforms}>
-            SALE
+          <p className="text-sm text-fg">{platformLine}</p>
+          <Button variant="secondary" size="sm" className="min-h-11" onClick={editPlatforms}>
+            Piattaforme
           </Button>
         </section>
 
@@ -112,12 +114,14 @@ export function Results() {
         </section>
 
         <footer className="mt-12 flex flex-col gap-3 sm:flex-row">
-          <Button variant="secondary" onClick={() => goTo(0)} className="min-h-12 font-pixel text-[10px]">
-            RIFINISCI
-          </Button>
-          <Button variant="ghost" onClick={reset} className="min-h-12 font-pixel text-[10px]">
+          {mode === "quiz" ? (
+            <Button variant="secondary" onClick={() => goTo(0)} className="min-h-12">
+              Rifinisci il quiz
+            </Button>
+          ) : null}
+          <Button variant="ghost" onClick={reset} className="min-h-12">
             <RotateCcw className="size-4" />
-            RESET
+            Ricomincia
           </Button>
         </footer>
         <LegalFooter />
@@ -138,7 +142,7 @@ function Tonight({
   const meta = useFilmMeta(movie);
   return (
     <section className="mt-10 pixel-panel p-5 sm:p-7">
-      <p className="font-pixel text-[8px] tracking-[0.18em] text-accent">★ STASERA IN SALA ★</p>
+      <p className="text-xs font-medium tracking-[0.18em] text-accent uppercase">Stasera in sala</p>
       <div className="mt-4 flex flex-col gap-5 sm:flex-row">
         <Poster movie={movie} meta={meta} size="hero" />
         <div className="min-w-0 flex-1">
@@ -190,11 +194,14 @@ function MovieRow({ movie, index, owned }: { movie: Movie; index: number; owned:
 
 function Meta({ movie }: { movie: Movie }) {
   return (
-    <p className="mt-2 text-sm text-subtle">
-      {movie.year} · {movie.runtime} min
-      {movie.rating ? ` · IMDb ${movie.rating.toFixed(1)}` : ""}
-      {movie.originalTitle && movie.originalTitle !== movie.title ? ` · ${movie.originalTitle}` : ""}
-    </p>
+    <div>
+      <p className="mt-2 text-sm text-subtle">
+        {movie.year} · {movie.runtime} min
+        {movie.director ? ` · ${movie.director}` : ""}
+        {movie.originalTitle && movie.originalTitle !== movie.title ? ` · ${movie.originalTitle}` : ""}
+      </p>
+      <Tags movie={movie} />
+    </div>
   );
 }
 

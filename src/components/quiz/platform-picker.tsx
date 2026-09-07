@@ -30,13 +30,8 @@ export function PlatformPicker({
               )}
             >
               <span className="text-[0.95rem] text-fg">{PLATFORM_META[id].label}</span>
-              <span
-                className={cn(
-                  "font-pixel text-[9px]",
-                  on ? "text-accent" : "text-subtle",
-                )}
-              >
-                {on ? "ON" : "OFF"}
+              <span className={cn("text-xs", on ? "text-accent" : "text-subtle")}>
+                {on ? "Sì" : ""}
               </span>
             </button>
           </li>

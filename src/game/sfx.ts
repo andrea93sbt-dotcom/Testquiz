@@ -53,4 +53,8 @@ function tone(a: AudioContext, at: number, freq: number, dur: number, gain: numb
   g.connect(a.destination);
   o.start(at);
   o.stop(at + dur + 0.02);
+  o.onended = () => {
+    o.disconnect();
+    g.disconnect();
+  };
 }

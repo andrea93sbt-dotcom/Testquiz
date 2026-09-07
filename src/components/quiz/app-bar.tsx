@@ -9,39 +9,39 @@ export function AppBar() {
   const [askOff, setAskOff] = useState(false);
 
   return (
-    <div className="mb-3">
+    <div className="mb-4">
       <div className="flex items-center justify-between gap-3">
-        <Button variant="ghost" size="sm" className="min-h-11 px-2 font-pixel text-[9px]" onClick={home}>
-          MENU
+        <Button variant="ghost" size="sm" className="min-h-11 px-2" onClick={home}>
+          Menu
         </Button>
         <button
           type="button"
-          className="inline-flex min-h-11 items-center pixel-chip px-3 font-pixel text-[8px] text-ok"
+          className="inline-flex min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg"
           onClick={() => setAskOff((v) => !v)}
           aria-expanded={askOff}
         >
-          ADS ON
+          Annunci on
         </button>
       </div>
       {askOff ? (
-        <div className="mt-3 pixel-panel p-4">
+        <div className="mt-3 rounded-md border border-border bg-surface p-4">
           <p className="text-sm leading-relaxed text-muted">
             Gli annunci tengono Platea gratis. Se li spegni, il quiz si chiude.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button size="sm" className="min-h-11 font-pixel text-[9px]" onClick={() => setAskOff(false)}>
-              LASCIA
+            <Button size="sm" className="min-h-11" onClick={() => setAskOff(false)}>
+              Lascia accesi
             </Button>
             <Button
               size="sm"
               variant="secondary"
-              className="min-h-11 font-pixel text-[9px]"
+              className="min-h-11"
               onClick={() => {
                 decline();
                 home();
               }}
             >
-              SPEGNI
+              Spegni
             </Button>
           </div>
         </div>

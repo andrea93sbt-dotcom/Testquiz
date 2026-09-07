@@ -69,7 +69,7 @@ export function ConsentBanner() {
         </label>
         <Button
           size="lg"
-          className="mt-5 min-h-14 w-full font-pixel text-[11px]"
+          className="mt-5 min-h-14 w-full"
           disabled={!ageOk}
           onClick={() => {
             unlockAudio();

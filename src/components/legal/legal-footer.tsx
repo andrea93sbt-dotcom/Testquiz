@@ -15,7 +15,7 @@ export function LegalFooter() {
   return (
     <nav
       aria-label="Informazioni legali"
-      className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-5 font-pixel text-[8px] text-subtle"
+      className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-5 text-xs text-subtle"
     >
       {LINKS.map((l) => (
         <Link

@@ -4,6 +4,7 @@ import { Intro } from "@/components/quiz/intro";
 import { Platforms } from "@/components/quiz/platforms";
 import { QuizView } from "@/components/quiz/quiz-view";
 import { Results } from "@/components/quiz/results";
+import { SeenView } from "@/components/quiz/seen-view";
 import { useAds } from "@/lib/ads-store";
 import { useLegal } from "@/lib/legal-store";
 import { useQuiz } from "@/lib/store";
@@ -41,5 +42,6 @@ function Home() {
   if (consent !== "all" || !ageOk || phase === "intro") return <Intro />;
   if (phase === "platforms") return <Platforms />;
   if (phase === "quiz") return <QuizView />;
+  if (phase === "seen") return <SeenView />;
   return <Results />;
 }

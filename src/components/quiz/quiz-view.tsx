@@ -1,11 +1,11 @@
-import { useEffect } from "react";
 import { QUESTIONS } from "@/data/questions";
 import { CHAPTERS } from "@/data/chapters";
 import { optionIdsForPlatforms } from "@/lib/platforms";
 import { useQuiz } from "@/lib/store";
+import { useEffect } from "react";
 import { AppBar } from "@/components/quiz/app-bar";
-import { Arena } from "@/game/arena";
-import { unlockAudio } from "@/game/sfx";
+import { PlazaCanvas } from "@/game/plaza-canvas";
+import { AdSlot } from "@/components/ads/ad-slot";
 
 export function QuizView() {
   const index = useQuiz((s) => s.index);
@@ -16,38 +16,53 @@ export function QuizView() {
   const skip = useQuiz((s) => s.skip);
   const finish = useQuiz((s) => s.finish);
 
-  const question = QUESTIONS[index];
-  const chapter = CHAPTERS.find((c) => c.id === question.ch)!;
-  const answeredCount = Object.keys(answers).length;
+  const safeIndex = Math.max(0, Math.min(index, QUESTIONS.length - 1));
+  const question = QUESTIONS[safeIndex];
+  const chapter = question ? CHAPTERS.find((c) => c.id === question.ch) : undefined;
 
   useEffect(() => {
-    if (question.id !== 81) return;
+    if (index >= QUESTIONS.length) finish();
+  }, [index, finish]);
+
+  useEffect(() => {
+    if (!question || question.id !== 81) return;
     if ((answers[81]?.length ?? 0) > 0 || platforms.length === 0) return;
     setAnswer(81, optionIdsForPlatforms(platforms));
-  }, [question.id, answers, platforms, setAnswer]);
+  }, [question, answers, platforms, setAnswer]);
+
+  if (!question || !chapter) {
+    return (
+      <main id="contenuto" className="mx-auto max-w-xl px-4 py-10">
+        <p className="text-muted">Il quiz è finito.</p>
+      </main>
+    );
+  }
 
   const opts = question.opts.slice(0, 4);
 
   return (
-    <main id="contenuto" className="mx-auto flex min-h-dvh max-w-xl flex-col px-3 py-3 sm:px-5 sm:py-5">
-      <AppBar />
-      <p className="mb-2 font-pixel text-[9px] tracking-widest text-ticket">
-        ATTO {chapter.id}/10 · {chapter.title.toUpperCase()}
-      </p>
-      <Arena
-        key={question.id}
-        question={question.q}
-        hint={question.hint}
-        options={opts}
-        progress={`${String(index + 1).padStart(3, "0")}/100 · ${answeredCount} ok`}
-        onPick={(id) => {
-          unlockAudio();
-          setAnswer(question.id, [id]);
-          if (index >= QUESTIONS.length - 1) finish();
-          else next();
-        }}
-        onSkip={skip}
-      />
-    </main>
+    <div className="relative min-h-dvh bg-bg">
+      <main id="contenuto" className="mx-auto flex min-h-dvh max-w-3xl flex-col px-3 py-4 sm:px-6">
+        <AppBar />
+        <PlazaCanvas
+          question={question.q}
+          hint={question.hint}
+          chapter={`Atto ${chapter.id} · ${chapter.title}`}
+          index={safeIndex}
+          total={QUESTIONS.length}
+          options={opts}
+          onPick={(ids) => {
+            setAnswer(question.id, ids);
+            if (safeIndex >= QUESTIONS.length - 1) finish();
+            else next();
+          }}
+          onSkip={() => {
+            if (safeIndex >= QUESTIONS.length - 1) finish();
+            else skip();
+          }}
+        />
+        <AdSlot format="banner" className="mt-4" />
+      </main>
+    </div>
   );
 }

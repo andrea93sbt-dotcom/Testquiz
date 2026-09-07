@@ -33,7 +33,7 @@ export function Poster({
   return (
     <figure
       className={cn(
-        "shrink-0 overflow-hidden bg-raised pixel-chip",
+        "shrink-0 overflow-hidden rounded-md bg-raised ring-2 ring-paper/80",
         size === "hero" ? "w-36 sm:w-40" : "w-[4.5rem] sm:w-20",
       )}
     >
@@ -52,6 +52,23 @@ export function Poster({
         </div>
       )}
     </figure>
+  );
+}
+
+export function Tags({ movie, compact }: { movie: Movie; compact?: boolean }) {
+  const tags = compact ? movie.tags.slice(0, 6) : movie.tags;
+  if (!tags.length) return null;
+  return (
+    <ul className="mt-2 flex flex-wrap gap-1.5">
+      {tags.map((t) => (
+        <li
+          key={t}
+          className="rounded-sm border border-border bg-raised px-2 py-0.5 text-[11px] leading-snug text-muted"
+        >
+          {t}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -127,7 +144,7 @@ export function Plot({
       {wiki ? (
         <p className="mt-2 text-[11px] text-subtle">
           Locandina e trama da{" "}
-          <a href={wiki} target="_blank" rel="noreferrer" className="underline-offset-2 hover:underline">
+          <a href={wiki} target="_blank" rel="noreferrer" className="underline underline-offset-2">
             Wikipedia
           </a>
           , CC BY-SA.

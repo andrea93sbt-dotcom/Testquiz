@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Platea",
+      "hasCanvas": false,
+      "bodyTextLen": 16,
+      "bodyTextHash": "649b9da2955678919d6daa8adc0cce90adfd6a640aa9405ce902b6e3bf7d6251",
+      "bodyTextPrefix": "Vai al contenuto",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Platea",
+      "hasCanvas": false,
+      "bodyTextLen": 16,
+      "bodyTextHash": "649b9da2955678919d6daa8adc0cce90adfd6a640aa9405ce902b6e3bf7d6251",
+      "bodyTextPrefix": "Vai al contenuto",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

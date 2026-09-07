@@ -22,7 +22,7 @@ export function Platforms() {
     <main id="contenuto" className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4 py-6 sm:px-8 sm:py-10">
       <AppBar />
       <header>
-        <p className="font-pixel text-[9px] tracking-[0.22em] text-ticket">BIGLIETTERIA</p>
+        <p className="text-xs font-medium tracking-[0.22em] text-ticket uppercase">Biglietteria</p>
         <h1 className="mt-4 font-display text-3xl italic leading-tight text-fg md:text-4xl">
           Dove guardi, di solito?
         </h1>
@@ -35,12 +35,12 @@ export function Platforms() {
 
       <section className="mt-8 flex-1">
         <PlatformPicker selected={selected} onToggle={togglePlatform} />
-        <p className="mt-4 font-pixel text-[8px] text-subtle">{summary}. Puoi saltare.</p>
+        <p className="mt-4 text-sm text-subtle">{summary}. Puoi saltare.</p>
       </section>
 
       <footer className="mt-8 flex flex-col gap-2 border-t border-border pt-5 sm:flex-row">
-        <Button size="lg" onClick={confirmPlatforms} className="min-h-14 w-full font-pixel text-[11px] sm:w-auto">
-          {count > 0 ? "CONTINUA" : "SALTA"}
+        <Button size="lg" onClick={confirmPlatforms} className="min-h-14 w-full sm:w-auto">
+          {count > 0 ? "Continua" : "Salta"}
         </Button>
         {platformsReturn === "results" ? (
           <p className="self-center text-xs text-subtle">
