@@ -1,0 +1,138 @@
+import { useEffect, useState } from "react";
+import { loadFilmMeta, type FilmMeta } from "@/lib/film-meta";
+import type { Movie, Platform } from "@/data/types";
+import { PLATFORM_META } from "@/data/types";
+import { movieSearchLinks } from "@/lib/scoring";
+import { cn } from "@/lib/utils";
+
+export function useFilmMeta(movie: Movie) {
+  const [meta, setMeta] = useState<FilmMeta | null>(null);
+  useEffect(() => {
+    let live = true;
+    loadFilmMeta(movie).then((m) => {
+      if (live) setMeta(m);
+    });
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [movie.id]);
+  return meta;
+}
+
+export function Poster({
+  movie,
+  meta,
+  size,
+}: {
+  movie: Movie;
+  meta: FilmMeta | null;
+  size: "hero" | "row";
+}) {
+  const src = meta?.poster;
+  return (
+    <figure
+      className={cn(
+        "shrink-0 overflow-hidden bg-raised pixel-chip",
+        size === "hero" ? "w-36 sm:w-40" : "w-[4.5rem] sm:w-20",
+      )}
+    >
+      {src ? (
+        <img
+          src={src}
+          alt={`Locandina di ${movie.title}`}
+          width={size === "hero" ? 160 : 80}
+          height={size === "hero" ? 240 : 120}
+          className="aspect-[2/3] w-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+      ) : (
+        <div className="flex aspect-[2/3] w-full items-center justify-center bg-raised px-2 text-center">
+          <span className="font-display text-sm italic leading-tight text-paper">{movie.title}</span>
+        </div>
+      )}
+    </figure>
+  );
+}
+
+export function Availability({ movie, owned }: { movie: Movie; owned: Platform[] }) {
+  const links = movieSearchLinks(movie, owned);
+  return (
+    <div className="mt-3">
+      {owned.length ? (
+        <ul className="flex flex-wrap gap-2">
+          {owned.map((p) => (
+            <li key={p}>
+              <a
+                href={PLATFORM_META[p].search(movie.title)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-10 items-center rounded-sm border border-ok/50 bg-ok/15 px-2.5 text-xs font-medium text-fg"
+              >
+                {PLATFORM_META[p].label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <a
+        href={links.justwatch}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-2 inline-flex min-h-10 items-center text-xs font-medium text-ticket underline-offset-2 hover:underline"
+      >
+        Verifica dove si vede ora su JustWatch
+      </a>
+    </div>
+  );
+}
+
+export function Plot({
+  movie,
+  meta,
+  compact,
+}: {
+  movie: Movie;
+  meta: FilmMeta | null;
+  compact?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const plot = meta?.plot;
+  const teaser = compact ? movie.synopsis : plot ?? movie.synopsis;
+  const shown = open && plot ? plot : teaser;
+  const wiki =
+    meta?.wikiTitle && meta.wikiLang
+      ? `https://${meta.wikiLang}.wikipedia.org/wiki/${encodeURIComponent(meta.wikiTitle.replace(/ /g, "_"))}`
+      : null;
+  return (
+    <div>
+      <p
+        className={cn(
+          "text-sm leading-relaxed text-muted",
+          !open && compact && "line-clamp-2",
+          !open && !compact && plot && "line-clamp-5",
+        )}
+      >
+        {shown}
+      </p>
+      {plot && plot !== movie.synopsis ? (
+        <button
+          type="button"
+          className="mt-2 min-h-11 text-left text-xs font-medium text-ticket underline-offset-2 hover:underline"
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? "Riduci" : compact ? "Trama" : "Trama completa"}
+        </button>
+      ) : null}
+      {wiki ? (
+        <p className="mt-2 text-[11px] text-subtle">
+          Locandina e trama da{" "}
+          <a href={wiki} target="_blank" rel="noreferrer" className="underline-offset-2 hover:underline">
+            Wikipedia
+          </a>
+          , CC BY-SA.
+        </p>
+      ) : null}
+    </div>
+  );
+}
