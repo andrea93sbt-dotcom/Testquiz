@@ -56,11 +56,24 @@ const AXIS_LABEL: Record<Axis, string> = {
   biografico: "biografie",
   western: "western",
   musical: "musical",
+  sport: "sport",
+  storico: "film storici",
+  musica: "musica",
+  supereroi: "supereroi",
+  spionaggio: "spionaggio",
+  formazione: "storie di formazione",
+  vendetta: "vendetta",
+  lgbt: "storie LGBT",
+  distopia: "distopie",
+  giudiziario: "giustizia",
+  amicizia: "amicizia",
+  natalizio: "film di Natale",
+  noir: "noir",
   leggero: "film leggeri",
   oscuro: "film cupi",
   teso: "tensione",
   malinconico: "malinconia",
-  sollevante: "film allegri",
+  sollevante: "film che rialzano",
   strano: "film strani",
   ironico: "ironia",
   lento: "ritmo lento",
@@ -113,7 +126,7 @@ export function buildProfile(
     const picked = answers[question.id];
     if (!picked?.length) continue;
     answered += 1;
-    const chapterBoost = question.ch === 1 ? 2.3 : question.ch === 10 ? 1.4 : 1;
+    const chapterBoost = question.ch === 1 ? 2.2 : question.ch <= 4 ? 1.7 : question.ch <= 7 ? 1.35 : 1;
     const share = 1 / picked.length;
 
     for (const optId of picked) {
@@ -188,16 +201,16 @@ export function pickArchetype(vector: Record<Axis, number>): Archetype {
     {
       name: "Serata comoda",
       line: "Stasera vuoi un film che ti fa stare bene.",
-      axes: ["commedia", "leggero", "semplice", "sollevante", "breve"],
+      axes: ["commedia", "leggero", "semplice", "sollevante", "breve", "natalizio"],
     },
     {
       name: "Voglia di azione",
       line: "Vuoi ritmo, inseguimenti e qualcosa di grande da vedere.",
-      axes: ["azione", "spettacolo", "veloce", "hollywood", "avventura"],
+      axes: ["azione", "spettacolo", "veloce", "hollywood", "avventura", "supereroi"],
     },
     {
       name: "Ti piace il brivido",
-      line: "Vuoi un film che ti tiene teso, non rumore a caso.",
+      line: "Vuoi un film che ti tiene teso.",
       axes: ["horror", "teso", "oscuro", "thriller"],
     },
     {
@@ -208,22 +221,32 @@ export function pickArchetype(vector: Record<Axis, number>): Archetype {
     {
       name: "Mondi nuovi",
       line: "Idee e posti che non esistono.",
-      axes: ["scifi", "complesso", "fantasy", "spettacolo"],
+      axes: ["scifi", "fantasy", "distopia", "spettacolo", "supereroi"],
     },
     {
-      name: "Amore, senza troppi zuccheri",
-      line: "Una storia d'amore, non un melodramma.",
+      name: "Storie d'amore",
+      line: "Vuoi una storia di coppia.",
       axes: ["romance", "amore", "intimo", "malinconico"],
     },
     {
       name: "Storie vere",
-      line: "Persone vere, niente costume.",
-      axes: ["vero", "biografico", "dramma", "crime"],
+      line: "Persone vere, fatti accaduti.",
+      axes: ["vero", "biografico", "dramma", "storico", "documentario"],
     },
     {
       name: "Fuori dal solito",
-      line: "Non solo i film che senti nominare sempre.",
+      line: "Cinema italiano, europeo, asiatico, classici.",
       axes: ["europa", "asia", "italiano", "classico"],
+    },
+    {
+      name: "Legami",
+      line: "Famiglia, amicizia, chi diventiamo.",
+      axes: ["famiglia", "amicizia", "formazione", "identita", "lgbt"],
+    },
+    {
+      name: "Giustizia e ombra",
+      line: "Processi, vendette, noir.",
+      axes: ["giudiziario", "vendetta", "noir", "crime", "spionaggio"],
     },
   ];
   let best = packs[0]!;

@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 import { questionsFor } from "@/data/questions";
 import { pickSeenTrios } from "@/data/movies";
 import type { AnswerMap, Platform, SeenVerdict } from "@/data/types";
-import { optionIdsForPlatforms, platformsFromOptionIds } from "@/lib/platforms";
 
 export type Mode = "quiz" | "short" | "seen";
 export type Phase = "intro" | "platforms" | "quiz" | "seen" | "results";
@@ -101,11 +100,7 @@ export const useQuiz = create<State>()(
           seenVerdicts: {},
         }),
       confirmPlatforms: () => set({ phase: get().platformsReturn }),
-      setPlatforms: (platforms) =>
-        set({
-          platforms,
-          answers: { ...get().answers, 81: optionIdsForPlatforms(platforms) },
-        }),
+      setPlatforms: (platforms) => set({ platforms }),
       togglePlatform: (platform) => {
         const current = get().platforms;
         const next = current.includes(platform)
@@ -114,15 +109,7 @@ export const useQuiz = create<State>()(
         get().setPlatforms(next);
       },
       setAnswer: (questionId, optionIds) => {
-        const nextAnswers = { ...get().answers, [questionId]: optionIds };
-        if (questionId === 81) {
-          set({
-            answers: nextAnswers,
-            platforms: platformsFromOptionIds(optionIds),
-          });
-          return;
-        }
-        set({ answers: nextAnswers });
+        set({ answers: { ...get().answers, [questionId]: optionIds } });
       },
       next: () => {
         const { index, mode } = get();
@@ -182,7 +169,7 @@ export const useQuiz = create<State>()(
     {
       name: "platea-quiz",
       skipHydration: true,
-      version: 5,
+      version: 6,
       partialize: (s): PersistSlice => ({
         phase: s.phase,
         mode: s.mode,
@@ -194,8 +181,14 @@ export const useQuiz = create<State>()(
         seenTrios: s.seenTrios,
         seenVerdicts: s.seenVerdicts,
       }),
-      migrate: (persisted) => {
+      migrate: (persisted, fromVersion) => {
         const p = (persisted ?? {}) as Partial<PersistSlice>;
+        if ((fromVersion ?? 0) < 6) {
+          return {
+            ...empty,
+            platforms: Array.isArray(p.platforms) ? p.platforms : [],
+          };
+        }
         const mode = parseMode(p.mode);
         const index = clampIndex(p.index, mode);
         let phase: Phase = p.phase ?? "intro";

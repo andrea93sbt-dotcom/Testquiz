@@ -26,8 +26,8 @@ function A11yPage() {
       </ul>
       <h2>Limiti noti</h2>
       <p>
-        Il quiz completo è lungo: puoi salvare in locale e uscire dopo venti
-        risposte. I siti di terzi aperti dai link (JustWatch, piattaforme)
+        Il quiz completo ha cinquanta domande: puoi salvare in locale e uscire
+        quando vuoi. I siti di terzi aperti dai link (JustWatch, piattaforme)
         hanno la loro accessibilità, fuori dal nostro controllo.
       </p>
       <h2>Segnalazioni</h2>

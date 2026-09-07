@@ -1,6 +1,5 @@
 import { questionsFor } from "@/data/questions";
 import { CHAPTERS } from "@/data/chapters";
-import { optionIdsForPlatforms } from "@/lib/platforms";
 import { useQuiz } from "@/lib/store";
 import { useEffect } from "react";
 import { AppBar } from "@/components/quiz/app-bar";
@@ -10,9 +9,7 @@ import { AdSlot } from "@/components/ads/ad-slot";
 export function QuizView() {
   const index = useQuiz((s) => s.index);
   const mode = useQuiz((s) => s.mode);
-  const answers = useQuiz((s) => s.answers);
   const setAnswer = useQuiz((s) => s.setAnswer);
-  const platforms = useQuiz((s) => s.platforms);
   const next = useQuiz((s) => s.next);
   const skip = useQuiz((s) => s.skip);
   const finish = useQuiz((s) => s.finish);
@@ -25,12 +22,6 @@ export function QuizView() {
   useEffect(() => {
     if (index >= deck.length) finish();
   }, [index, deck.length, finish]);
-
-  useEffect(() => {
-    if (!question || question.id !== 81) return;
-    if ((answers[81]?.length ?? 0) > 0 || platforms.length === 0) return;
-    setAnswer(81, optionIdsForPlatforms(platforms));
-  }, [question, answers, platforms, setAnswer]);
 
   if (!question || !chapter) {
     return (

@@ -33,7 +33,7 @@ export function Results() {
   const matches = rankMovies(profile).slice(0, 12);
   const tonight = matches[0];
   const archetype = pickArchetype(profile.vector);
-  const axes = topAxes(profile.vector, 6);
+  const axes = topAxes(profile.vector, 8);
   const maxAxis = axes[0]?.value || 1;
   const recipes = searchRecipes(profile, matches);
   const owned = platforms.length ? platforms : (profile.flags.platforms ?? []);

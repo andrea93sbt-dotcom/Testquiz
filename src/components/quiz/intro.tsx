@@ -109,9 +109,9 @@ export function Intro() {
                 start();
               }}
             >
-              Quiz completo · 100 domande
+              Quiz completo · 50 domande
             </Button>
-            <p className="-mt-1 text-sm text-subtle">Più lungo, più preciso.</p>
+            <p className="-mt-1 text-sm text-subtle">Più domande, più preciso su genere e temi.</p>
             <Button
               variant="secondary"
               size="lg"
