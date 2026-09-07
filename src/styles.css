@@ -20,6 +20,7 @@
   --color-border-strong: color-mix(in oklab, var(--color-fg) 36%, transparent);
   --color-danger: #e24b6e;
   --color-ok: #3ec9b0;
+  --color-stella: #7aa6ff;
 
   --font-display: "Instrument Serif", "Times New Roman", serif;
   --font-sans: "Figtree Variable", "Figtree", "Segoe UI", system-ui, sans-serif;
@@ -78,6 +79,45 @@
 
 .marquee {
   box-shadow: 0 0 0 2px var(--color-accent), 4px 4px 0 color-mix(in oklab, black 45%, transparent);
+}
+
+.cinema-hit {
+  --sala: var(--color-accent);
+  position: absolute;
+  z-index: 2;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.cinema-hit:focus-visible {
+  outline: 2px solid var(--sala);
+  outline-offset: 2px;
+}
+.locandina {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 16% 9% 10%;
+  color: var(--color-paper-fg);
+  text-align: center;
+  pointer-events: none;
+}
+.locandina-title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: clamp(0.72rem, 2.5vw, 1.2rem);
+  font-style: italic;
+  line-height: 1.15;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+.cinema-hit[data-hot="true"] .locandina-title {
+  color: #2a0c08;
 }
 
 .rise-in {

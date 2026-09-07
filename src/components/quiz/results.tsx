@@ -12,12 +12,13 @@ import {
   searchRecipes,
   topAxes,
 } from "@/lib/scoring";
+import { youtubeSearchUrl } from "@/lib/film-meta";
 import { useQuiz } from "@/lib/store";
 import { AdSlot } from "@/components/ads/ad-slot";
 import { LegalFooter } from "@/components/legal/legal-footer";
 import { AppBar } from "@/components/quiz/app-bar";
 import { ShareBar } from "@/components/quiz/share-bar";
-import { Plot, Poster, Availability, Tags, useFilmMeta } from "@/components/quiz/film-card";
+import { Plot, Poster, Availability, Tags, Trailer, useFilmMeta } from "@/components/quiz/film-card";
 
 export function Results() {
   const answers = useQuiz((s) => s.answers);
@@ -162,6 +163,7 @@ function Tonight({
           <div className="mt-4">
             <Plot movie={movie} meta={meta} />
           </div>
+          <Trailer movie={movie} meta={meta} />
           <Availability movie={movie} owned={owned} />
           {reasons.length ? (
             <ul className="mt-4 flex flex-wrap gap-2">
@@ -229,6 +231,7 @@ function SearchRow({
   return (
     <div className={compact ? "mt-3 flex flex-wrap gap-2" : "mt-6 flex flex-wrap gap-2"}>
       <OutLink href={links.justwatch}>Dove vederlo</OutLink>
+      <OutLink href={youtubeSearchUrl(movie)}>Trailer</OutLink>
       <OutLink href={links.google}>Cerca</OutLink>
     </div>
   );

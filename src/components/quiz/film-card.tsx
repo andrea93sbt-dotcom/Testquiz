@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { loadFilmMeta, type FilmMeta } from "@/lib/film-meta";
+import { Play } from "lucide-react";
+import { loadFilmMeta, youtubeEmbedUrl, youtubeSearchUrl, type FilmMeta } from "@/lib/film-meta";
 import type { Movie, Platform } from "@/data/types";
 import { PLATFORM_META } from "@/data/types";
 import { movieSearchLinks } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
+import { unlockAudio } from "@/game/sfx";
 
 export function useFilmMeta(movie: Movie) {
   const [meta, setMeta] = useState<FilmMeta | null>(null);
@@ -168,6 +170,68 @@ export function Plot({
           , licenza CC BY-SA.
         </p>
       ) : null}
+    </div>
+  );
+}
+
+export function Trailer({ movie, meta }: { movie: Movie; meta: FilmMeta | null }) {
+  const [on, setOn] = useState(false);
+  const search = youtubeSearchUrl(movie);
+  const embed = meta?.trailerId ? youtubeEmbedUrl(meta.trailerId) : null;
+
+  if (!meta) {
+    return <p className="mt-5 text-sm text-subtle">Cerco il trailer…</p>;
+  }
+  if (on && embed) {
+    return (
+      <div className="mt-5 overflow-hidden rounded-md bg-raised ring-2 ring-paper/80">
+        <div className="relative aspect-video">
+          <iframe
+            title={`Trailer di ${movie.title}`}
+            src={`${embed}&autoplay=1`}
+            className="absolute inset-0 h-full w-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+        <a
+          href={`https://www.youtube.com/watch?v=${meta?.trailerId}`}
+          target="_blank"
+          rel="noreferrer"
+          className="block px-3 py-2 text-xs text-subtle underline-offset-2 hover:text-muted hover:underline"
+        >
+          Apri su YouTube
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 flex flex-wrap gap-2">
+      {embed ? (
+        <button
+          type="button"
+          onClick={() => {
+            unlockAudio();
+            setOn(true);
+          }}
+          className="inline-flex min-h-12 items-center gap-2 rounded-md bg-accent px-4 text-sm font-medium text-accent-fg hover:bg-fg"
+        >
+          <Play className="size-4" />
+          Guarda il trailer
+        </button>
+      ) : (
+        <a
+          href={search}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-12 items-center gap-2 rounded-md bg-accent px-4 text-sm font-medium text-accent-fg hover:bg-fg"
+        >
+          <Play className="size-4" />
+          Guarda il trailer
+        </a>
+      )}
     </div>
   );
 }

@@ -50,8 +50,10 @@ function PrivacyPage() {
           approssimato e dati di navigazione, secondo la sua informativa.
         </li>
         <li>
-          nei risultati il browser può chiedere a Wikipedia locandina e trama
-          (titolo e anno, non le tue risposte).
+          nei risultati il browser può chiedere a Wikipedia locandina e trama,
+          e a Wikidata l'identificativo del trailer YouTube (titolo e codice
+          IMDb, non le tue risposte). Se avvii il trailer, YouTube può
+          trattare dati di riproduzione secondo la sua informativa.
         </li>
       </ul>
       <p>

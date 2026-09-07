@@ -1,32 +1,74 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Option } from "@/data/types";
 import { blip, unlockAudio } from "@/game/sfx";
-import { cn } from "@/lib/utils";
 
-const W = 320;
-const H = 220;
+const W = 640;
+const H = 480;
 const DIRS = ["up", "left", "right", "down"] as const;
 type Dir = (typeof DIRS)[number];
 
-const SLOTS: Record<Dir, { x: number; y: number }> = {
-  up: { x: 160, y: 52 },
-  left: { x: 52, y: 118 },
-  right: { x: 268, y: 118 },
-  down: { x: 160, y: 186 },
+type Slot = { x: number; y: number };
+type Rect = { x: number; y: number; w: number; h: number };
+
+const SLOTS: Record<Dir, Slot> = {
+  up: { x: 320, y: 172 },
+  left: { x: 112, y: 312 },
+  right: { x: 528, y: 312 },
+  down: { x: 320, y: 466 },
+};
+const HOME = { x: 320, y: 268 };
+
+const BUILD: Record<Dir, { w: number; h: number }> = {
+  up: { w: 236, h: 180 },
+  left: { w: 180, h: 196 },
+  right: { w: 180, h: 196 },
+  down: { w: 236, h: 180 },
 };
 
-const CINEMA_SRC: Record<Dir, string> = {
-  up: "/sprites/cinema-gold.png",
-  left: "/sprites/cinema-pink.png",
-  right: "/sprites/cinema-teal.png",
-  down: "/sprites/cinema-blue.png",
+/** Locandina hanging on the facade, below the marquee and above the door. */
+const POSTER_UV: Record<Dir, Rect> = {
+  up: { x: 0.22, y: 0.30, w: 0.56, h: 0.54 },
+  left: { x: 0.20, y: 0.28, w: 0.60, h: 0.54 },
+  right: { x: 0.20, y: 0.28, w: 0.60, h: 0.54 },
+  down: { x: 0.22, y: 0.30, w: 0.56, h: 0.54 },
 };
+
+type Sala = {
+  sprite: string;
+  color: string;
+  name: string;
+};
+
+const SALE: Record<Dir, Sala> = {
+  up: { sprite: "/sprites/cinema-gold.png", color: "#f0c43a", name: "Aurora" },
+  left: { sprite: "/sprites/cinema-pink.png", color: "#e24b6e", name: "Rosa" },
+  right: { sprite: "/sprites/cinema-teal.png", color: "#3ec9b0", name: "Lido" },
+  down: { sprite: "/sprites/cinema-blue.png", color: "#7aa6ff", name: "Stella" },
+};
+
+function buildingRect(dir: Dir): Rect {
+  const s = SLOTS[dir];
+  const b = BUILD[dir];
+  return { x: s.x - b.w / 2, y: s.y - b.h, w: b.w, h: b.h };
+}
+
+function posterRect(dir: Dir): Rect {
+  const b = buildingRect(dir);
+  const u = POSTER_UV[dir];
+  return {
+    x: b.x + b.w * u.x,
+    y: b.y + b.h * u.y,
+    w: b.w * u.w,
+    h: b.h * u.h,
+  };
+}
 
 const CACHE = new Map<string, HTMLImageElement>();
 function sprite(src: string) {
   let img = CACHE.get(src);
   if (!img) {
     img = new Image();
+    img.crossOrigin = "anonymous";
     img.src = src;
     CACHE.set(src, img);
   }
@@ -61,6 +103,9 @@ export function PlazaCanvas(props: PlazaProps) {
   const propsRef = useRef(props);
   propsRef.current = props;
   const aimRef = useRef<(dir: Dir) => void>(() => {});
+  const [hot, setHot] = useState<Dir | null>(null);
+  const hotRef = useRef(setHot);
+  hotRef.current = setHot;
 
   useEffect(() => {
     const canvasEl = canvasRef.current;
@@ -83,7 +128,7 @@ export function PlazaCanvas(props: PlazaProps) {
       /* */
     }
 
-    const player = { x: 160, y: 128, dir: "down" as Dir, walking: false, frame: 0, acc: 0 };
+    const player = { x: HOME.x, y: HOME.y, dir: "down" as Dir, walking: false, frame: 0, acc: 0 };
     let target: Dir | null = null;
     let entering: Dir | null = null;
     let enterT = 0;
@@ -95,14 +140,6 @@ export function PlazaCanvas(props: PlazaProps) {
     const particles: Particle[] = [];
     let fxFrame = 0;
     let starPhase = 0;
-    const tiles: { x: number; y: number; p: number }[] = [];
-    for (let i = 0; i < 36; i++) {
-      tiles.push({
-        x: 28 + Math.random() * 264,
-        y: 64 + Math.random() * 130,
-        p: Math.random() * Math.PI * 2,
-      });
-    }
 
     const sources = [
       "/sprites/player.png",
@@ -112,7 +149,7 @@ export function PlazaCanvas(props: PlazaProps) {
       "/sprites/prop-lamp.png",
       "/sprites/prop-popcorn.png",
       "/sprites/prop-reels.png",
-      ...Object.values(CINEMA_SRC),
+      ...Object.values(SALE).map((s) => s.sprite),
     ];
     for (const src of sources) sprite(src);
 
@@ -143,9 +180,13 @@ export function PlazaCanvas(props: PlazaProps) {
       return null;
     }
 
+    function syncHot(dir: Dir | null) {
+      hotRef.current(dir);
+    }
+
     function resetPlayer() {
-      player.x = 160;
-      player.y = 128;
+      player.x = HOME.x;
+      player.y = HOME.y;
       player.dir = "down";
       player.walking = false;
       player.frame = 0;
@@ -154,6 +195,7 @@ export function PlazaCanvas(props: PlazaProps) {
       enterT = 0;
       committed = false;
       trauma = 0;
+      syncHot(null);
     }
 
     function aim(dir: Dir) {
@@ -169,6 +211,7 @@ export function PlazaCanvas(props: PlazaProps) {
       target = dir;
       player.dir = dir;
       player.walking = true;
+      syncHot(dir);
       blip("step");
       burst(player.x, player.y + 8, "#ffd84a", 5);
     }
@@ -178,9 +221,9 @@ export function PlazaCanvas(props: PlazaProps) {
       if (committed || entering) return;
       entering = dir;
       enterT = 0;
-      trauma = Math.min(1, trauma + 0.4);
+      trauma = Math.min(1, trauma + 0.35);
       blip("ok");
-      burst(SLOTS[dir].x, SLOTS[dir].y - 8, "#ff4f8b", 16);
+      burst(SLOTS[dir].x, SLOTS[dir].y - 8, SALE[dir].color, 16);
       burst(SLOTS[dir].x, SLOTS[dir].y - 8, "#ffd84a", 10);
     }
 
@@ -216,6 +259,7 @@ export function PlazaCanvas(props: PlazaProps) {
     const onBlur = () => keys.clear();
 
     const onDown = (e: PointerEvent) => {
+      if ((e.target as HTMLElement).closest("[data-dir]")) return;
       swipe = { x: e.clientX, y: e.clientY };
       try {
         wrap.setPointerCapture(e.pointerId);
@@ -243,10 +287,10 @@ export function PlazaCanvas(props: PlazaProps) {
       const sy = ((e.clientY - rect.top) / rect.height) * H;
       swipe = null;
       let best: Dir | null = null;
-      let bestD = 42;
+      let bestD = 78;
       for (const d of DIRS) {
         const s = SLOTS[d];
-        const dist = Math.hypot(sx - s.x, sy - s.y);
+        const dist = Math.hypot(sx - s.x, sy - (s.y - BUILD[d].h * 0.45));
         if (dist < bestD) {
           bestD = dist;
           best = d;
@@ -286,9 +330,8 @@ export function PlazaCanvas(props: PlazaProps) {
     function resize() {
       const r = wrap.getBoundingClientRect();
       const dpr = Math.min(2, window.devicePixelRatio || 1);
-      const fit = Math.max(0.5, Math.min(r.width / W, r.height / H) || 1);
-      const cssW = Math.max(1, Math.round(W * fit));
-      const cssH = Math.max(1, Math.round(H * fit));
+      const cssW = Math.max(1, Math.round(r.width));
+      const cssH = Math.max(1, Math.round(r.height));
       canvas.style.width = `${cssW}px`;
       canvas.style.height = `${cssH}px`;
       canvas.width = Math.round(cssW * dpr);
@@ -315,6 +358,34 @@ export function PlazaCanvas(props: PlazaProps) {
       ctx.drawImage(img, sx, sy, sw, sh, Math.round(dx), Math.round(dy), dw, dh);
     }
 
+    function drawLocandinaOnWall(dir: Dir, bounce: number, glow: boolean) {
+      const slot = SLOTS[dir];
+      const sala = SALE[dir];
+      const b = BUILD[dir];
+      const u = POSTER_UV[dir];
+      const dw = b.w;
+      const dh = b.h;
+      const bx = slot.x - dw / 2;
+      const by = slot.y - dh + bounce;
+      const px = bx + dw * u.x;
+      const py = by + dh * u.y;
+      const pw = dw * u.w;
+      const ph = dh * u.h;
+
+      ctx.fillStyle = "rgba(16, 6, 14, 0.5)";
+      ctx.fillRect(px + 2, py + 3, pw, ph);
+
+      ctx.fillStyle = glow ? "#fff1c4" : sala.color;
+      ctx.fillRect(px - 3, py - 3, pw + 6, ph + 6);
+
+      ctx.fillStyle = glow ? "#fff7e4" : "#f3e6c4";
+      ctx.fillRect(px, py, pw, ph);
+
+      const band = Math.max(6, Math.round(ph * 0.1));
+      ctx.fillStyle = sala.color;
+      ctx.fillRect(px, py, pw, band);
+    }
+
     function frame(now: number) {
       if (dead) return;
       let dt = (now - last) / 1000;
@@ -333,12 +404,12 @@ export function PlazaCanvas(props: PlazaProps) {
       const dest = target ? SLOTS[target] : null;
       if (dest && !entering && !committed) {
         const dx = dest.x - player.x;
-        const dy = dest.y + 16 - player.y;
+        const dy = dest.y + 6 - player.y;
         const dist = Math.hypot(dx, dy);
-        const spd = 110;
+        const spd = 120;
         if (dist < 10) {
           player.x = dest.x;
-          player.y = dest.y + 16;
+          player.y = dest.y + 6;
           player.walking = false;
           commit(target!);
         } else {
@@ -368,8 +439,8 @@ export function PlazaCanvas(props: PlazaProps) {
       }
 
       const shake = trauma * trauma;
-      const ox = reduced ? 0 : (Math.random() * 2 - 1) * 5 * shake;
-      const oy = reduced ? 0 : (Math.random() * 2 - 1) * 5 * shake;
+      const ox = reduced ? 0 : (Math.random() * 2 - 1) * 4 * shake;
+      const oy = reduced ? 0 : (Math.random() * 2 - 1) * 4 * shake;
 
       ctx.imageSmoothingEnabled = false;
       ctx.clearRect(0, 0, W, H);
@@ -385,115 +456,150 @@ export function PlazaCanvas(props: PlazaProps) {
       for (let i = 0; i < 18; i++) {
         const tw = (Math.sin(starPhase * 3 + i * 1.7) + 1) / 2;
         if (tw < 0.4) continue;
-        ctx.globalAlpha = tw * 0.8;
-        ctx.fillRect((i * 37 + 11) % W, 4 + (i * 13) % 40, 1, 1);
+        ctx.globalAlpha = tw * 0.75;
+        ctx.fillRect((i * 37 + 11) % W, 6 + (i * 13) % 40, 1, 1);
       }
       ctx.globalAlpha = 1;
 
       ctx.save();
       ctx.translate(Math.round(ox), Math.round(oy));
 
-      ctx.fillStyle = "#3a1844";
       ctx.beginPath();
-      ctx.moveTo(160, 48);
-      ctx.lineTo(292, 128);
-      ctx.lineTo(160, 208);
-      ctx.lineTo(28, 128);
-      ctx.closePath();
+      ctx.ellipse(W / 2, H * 0.62, W * 0.48, H * 0.4, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#2a122c";
       ctx.fill();
-      ctx.strokeStyle = "#ffd84a";
-      ctx.lineWidth = 1;
-      ctx.stroke();
 
       const ground = sprite("/sprites/ground.png");
       if (ground.complete && ground.naturalWidth) {
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(160, 48);
-        ctx.lineTo(292, 128);
-        ctx.lineTo(160, 208);
-        ctx.lineTo(28, 128);
-        ctx.closePath();
+        ctx.ellipse(W / 2, H * 0.62, W * 0.47, H * 0.39, 0, 0, Math.PI * 2);
         ctx.clip();
-        ctx.globalAlpha = 0.55;
-        ctx.drawImage(ground, 36, 58, 248, 130);
+        ctx.globalAlpha = 0.7;
+        ctx.drawImage(ground, 16, 48, W - 32, H - 40);
         ctx.restore();
       }
 
-      for (const t of tiles) {
-        const a = (Math.sin(bob * 3.2 + t.p) + 1) / 2;
-        if (a < 0.82) continue;
-        ctx.fillStyle = a > 0.94 ? "#ffd84a" : "#ff4f8b";
-        ctx.fillRect(Math.round(t.x), Math.round(t.y), 1, 1);
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(W / 2, H * 0.62, W * 0.47, H * 0.39, 0, 0, Math.PI * 2);
+      ctx.clip();
+      for (let y = 70; y < H; y += 11) {
+        for (let x = 24; x < W - 24; x += 14) {
+          const lit = ((x + y) / 8 + Math.floor(bob * 2)) % 8 === 0;
+          ctx.fillStyle = lit ? "rgba(240,196,58,0.12)" : "rgba(20,8,24,0.1)";
+          ctx.fillRect(x, y, 11, 9);
+        }
       }
+      ctx.restore();
+
+      ctx.beginPath();
+      ctx.ellipse(W / 2, H * 0.62, W * 0.47, H * 0.39, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(240,196,58,0.28)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(HOME.x, HOME.y + 8, 36, 14, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(240,196,58,0.14)";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(240,196,58,0.4)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(HOME.x, HOME.y + 8, 12, 5, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(243,230,196,0.2)";
+      ctx.fill();
+
+      const pnow = propsRef.current;
+      const opts = pnow.options.slice(0, 4);
 
       const lamp = sprite("/sprites/prop-lamp.png");
       const pop = sprite("/sprites/prop-popcorn.png");
       const reels = sprite("/sprites/prop-reels.png");
       const bobY = reduced ? 0 : Math.sin(bob * 2) * 2;
       if (lamp.complete) {
-        ctx.drawImage(lamp, 16, 78 + bobY, 26, 26);
-        ctx.drawImage(lamp, 278, 78 - bobY, 26, 26);
+        ctx.drawImage(lamp, 214, 214 + bobY, 30, 30);
+        ctx.drawImage(lamp, 396, 214 - bobY, 30, 30);
       }
-      if (pop.complete) ctx.drawImage(pop, 26, 154, 28, 28);
-      if (reels.complete) ctx.drawImage(reels, 266, 154, 30, 30);
+      if (pop.complete) ctx.drawImage(pop, 236, 368, 28, 28);
+      if (reels.complete) ctx.drawImage(reels, 376, 366, 30, 30);
 
-      const pnow = propsRef.current;
-      const opts = pnow.options.slice(0, 4);
       const playerImg = sprite("/sprites/player.png");
       const fxImg = sprite("/sprites/fx.png");
+
+      type Ent = { y: number; z: number; draw: () => void };
+      const ents: Ent[] = [];
 
       function drawCinema(dir: Dir, i: number) {
         if (!opts[i]) return;
         const slot = SLOTS[dir];
-        const img = sprite(CINEMA_SRC[dir]);
-        const bounce = reduced ? 0 : Math.sin(bob * 2.4 + i) * 1.5;
+        const sala = SALE[dir];
+        const img = sprite(sala.sprite);
+        const bounce = 0;
         const glow = target === dir || entering === dir;
-        const scale = entering === dir ? 1 + enterT * 0.28 : glow ? 1.05 : 1;
-        const dw = 64 * scale;
-        const dh = 64 * scale;
-        if (glow) {
-          ctx.fillStyle = "rgba(255, 216, 74, 0.2)";
-          ctx.beginPath();
-          ctx.ellipse(slot.x, slot.y + 24, 28, 8, 0, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        if (img.complete && img.naturalWidth) {
-          ctx.drawImage(img, slot.x - dw / 2, slot.y - dh + bounce, dw, dh);
-        } else {
-          ctx.fillStyle = glow ? "#ffd84a" : "#5a2260";
-          ctx.fillRect(slot.x - 24, slot.y - 36, 48, 40);
-        }
+        const size = BUILD[dir];
+        const dw = size.w;
+        const dh = size.h;
+        ents.push({
+          y: slot.y,
+          z: 1,
+          draw: () => {
+            if (glow) {
+              ctx.fillStyle = sala.color;
+              ctx.globalAlpha = 0.28;
+              ctx.beginPath();
+              ctx.ellipse(slot.x, slot.y + 6, 42, 11, 0, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.globalAlpha = 1;
+            }
+            if (img.complete && img.naturalWidth) {
+              ctx.drawImage(img, slot.x - dw / 2, slot.y - dh + bounce, dw, dh);
+            } else {
+              ctx.fillStyle = glow ? sala.color : "#5a2260";
+              ctx.fillRect(slot.x - 36, slot.y - 52, 72, 56);
+            }
+            drawLocandinaOnWall(dir, bounce, glow);
+          },
+        });
       }
 
       drawCinema("up", 0);
       drawCinema("left", 1);
       drawCinema("right", 2);
-
-      if (playerImg.complete && playerImg.naturalWidth) {
-        const row = player.dir === "down" ? 0 : player.dir === "left" ? 1 : player.dir === "right" ? 2 : 3;
-        const col = player.walking ? player.frame : 0;
-        const hide = entering && enterT > 0.16;
-        if (!hide) {
-          const squash = player.walking ? 1 : 1 + Math.sin(bob * 5) * 0.03;
-          drawSprite(
-            playerImg,
-            col * 96,
-            row * 96,
-            96,
-            96,
-            player.x - 16,
-            player.y - 28 / squash,
-            32,
-            32 * squash,
-          );
-        }
-      } else {
-        ctx.fillStyle = "#ff4f8b";
-        ctx.fillRect(player.x - 4, player.y - 10, 8, 12);
-      }
-
       drawCinema("down", 3);
+
+      ents.push({
+        y: player.y,
+        z: 2,
+        draw: () => {
+          if (playerImg.complete && playerImg.naturalWidth) {
+            const row = player.dir === "down" ? 0 : player.dir === "left" ? 1 : player.dir === "right" ? 2 : 3;
+            const col = player.walking ? player.frame : 0;
+            const hide = entering && enterT > 0.16;
+            if (!hide) {
+              const squash = player.walking ? 1 : 1 + Math.sin(bob * 5) * 0.03;
+              drawSprite(
+                playerImg,
+                col * 96,
+                row * 96,
+                96,
+                96,
+                player.x - 16,
+                player.y - 28 / squash,
+                32,
+                32 * squash,
+              );
+            }
+          } else {
+            ctx.fillStyle = "#ff4f8b";
+            ctx.fillRect(player.x - 4, player.y - 10, 8, 12);
+          }
+        },
+      });
+
+      ents.sort((a, b) => a.y - b.y || a.z - b.z);
+      for (const e of ents) e.draw();
 
       if (fxImg.complete && fxImg.naturalWidth && (entering || trauma > 0.2)) {
         const f = Math.floor(fxFrame) % 4;
@@ -527,7 +633,6 @@ export function PlazaCanvas(props: PlazaProps) {
     };
   }, []);
 
-  const arrows: Record<Dir, string> = { up: "↑", down: "↓", left: "←", right: "→" };
   const opts = props.options.slice(0, 4);
 
   return (
@@ -544,43 +649,59 @@ export function PlazaCanvas(props: PlazaProps) {
         {props.hint ? <p className="mt-2 text-sm leading-relaxed text-muted">{props.hint}</p> : null}
       </header>
 
-      <div className="relative mt-4">
-        <div
-          ref={wrapRef}
-          className="relative flex aspect-[320/220] w-full items-center justify-center overflow-hidden rounded-md bg-bg touch-none"
-          style={{ imageRendering: "pixelated" }}
-        >
-          <canvas ref={canvasRef} className="block" style={{ imageRendering: "pixelated" }} />
-        </div>
-        <AnswerBtn
-          className="absolute left-1/2 top-2 z-10 w-[min(100%,20rem)] -translate-x-1/2"
-          arrow={arrows.up}
-          option={opts[0]}
-          onChoose={() => aimRef.current("up")}
-        />
-        <AnswerBtn
-          className="absolute left-2 top-1/2 z-10 w-[42%] -translate-y-1/2 sm:w-44"
-          arrow={arrows.left}
-          option={opts[1]}
-          onChoose={() => aimRef.current("left")}
-        />
-        <AnswerBtn
-          className="absolute right-2 top-1/2 z-10 w-[42%] -translate-y-1/2 sm:w-44"
-          arrow={arrows.right}
-          option={opts[2]}
-          onChoose={() => aimRef.current("right")}
-        />
-        <AnswerBtn
-          className="absolute bottom-2 left-1/2 z-10 w-[min(100%,20rem)] -translate-x-1/2"
-          arrow={arrows.down}
-          option={opts[3]}
-          onChoose={() => aimRef.current("down")}
-        />
+      <div
+        ref={wrapRef}
+        className="relative mt-4 aspect-[4/3] w-full overflow-hidden rounded-md bg-bg touch-none"
+        aria-label="Piazza dei cinema: ogni locandina sul palazzo è una risposta"
+      >
+        <canvas ref={canvasRef} className="block h-full w-full" />
+        {DIRS.map((dir, i) => {
+          const option = opts[i];
+          if (!option) return null;
+          const box = buildingRect(dir);
+          const paper = posterRect(dir);
+          const sala = SALE[dir];
+          return (
+            <button
+              key={option.id}
+              type="button"
+              data-dir={dir}
+              data-hot={hot === dir ? "true" : "false"}
+              aria-label={`Cinema ${sala.name}, in locandina: ${option.label}`}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={() => {
+                unlockAudio();
+                aimRef.current(dir);
+              }}
+              className="cinema-hit"
+              style={{
+                left: `${(box.x / W) * 100}%`,
+                top: `${(box.y / H) * 100}%`,
+                width: `${(box.w / W) * 100}%`,
+                height: `${(box.h / H) * 100}%`,
+                ["--sala" as string]: sala.color,
+              }}
+            >
+              <span
+                className="locandina"
+                style={{
+                  left: `${((paper.x - box.x) / box.w) * 100}%`,
+                  top: `${((paper.y - box.y) / box.h) * 100}%`,
+                  width: `${(paper.w / box.w) * 100}%`,
+                  height: `${(paper.h / box.h) * 100}%`,
+                }}
+              >
+                <span className="locandina-title">{option.label}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      <p className="mt-3 text-center text-sm text-subtle">
-        Tocca una risposta. Al computer: frecce o WASD. Al telefono: scorri verso una sala.
+      <p className="mt-3 text-center text-sm leading-relaxed text-subtle">
+        Quattro cinema intorno alla piazza. Entra in quello la cui locandina risponde alla domanda.
       </p>
+      <p className="text-center text-xs text-subtle">Tocca il palazzo, oppure cammina con le frecce o WASD.</p>
       <button
         type="button"
         onClick={props.onSkip}
@@ -589,35 +710,5 @@ export function PlazaCanvas(props: PlazaProps) {
         Salta questa domanda
       </button>
     </div>
-  );
-}
-
-function AnswerBtn({
-  option,
-  arrow,
-  onChoose,
-  className,
-}: {
-  option?: Option;
-  arrow: string;
-  onChoose: () => void;
-  className?: string;
-}) {
-  if (!option) return <div className={className} />;
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        unlockAudio();
-        onChoose();
-      }}
-      className={cn(
-        "min-h-11 max-h-24 overflow-hidden rounded-md border border-border bg-surface/95 px-2 py-2 text-left text-sm leading-snug text-fg shadow-md backdrop-blur-sm hover:border-accent sm:max-h-none sm:px-3",
-        className,
-      )}
-    >
-      <span className="mr-1 text-accent">{arrow}</span>
-      {option.label}
-    </button>
   );
 }
