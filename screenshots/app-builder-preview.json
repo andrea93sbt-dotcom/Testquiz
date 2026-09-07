@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Platea",
+      "hasCanvas": false,
+      "bodyTextLen": 1015,
+      "bodyTextHash": "6a5ed6e1c0b710402518048477b08db93bdbbf7f16a466e163171829360be8d3",
+      "bodyTextPrefix": "Vai al contenuto PLATEA Il film giusto, stasera. Un questionario",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Platea",
+      "hasCanvas": false,
+      "bodyTextLen": 1015,
+      "bodyTextHash": "6a5ed6e1c0b710402518048477b08db93bdbbf7f16a466e163171829360be8d3",
+      "bodyTextPrefix": "Vai al contenuto PLATEA Il film giusto, stasera. Un questionario",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

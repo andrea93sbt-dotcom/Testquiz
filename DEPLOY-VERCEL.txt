@@ -1,0 +1,25 @@
+Platea — come pubblicare su Vercel
+=================================
+
+Nella root del repo GitHub DEVONO esserci, visibili insieme:
+
+  package.json
+  vercel.json
+  vite.config.ts
+  src/
+  scripts/          ← senza questa cartella il build esplode
+  public/
+  server/
+
+Se su GitHub non vedi la cartella "scripts", Vercel darà:
+  Cannot find module '.../scripts/with-app-env.mjs'
+
+Cosa fare
+1. Scompatta questo zip.
+2. Controlla che "scripts/with-app-env.mjs" esista.
+3. Crea un repo GitHub e carica TUTTA la cartella (git add .), non i singoli file.
+4. Vercel → Import → Framework: TanStack Start
+   Output Directory: vuoto
+   Node 22
+   Env: VITE_AUTH_ENABLED = false
+5. Deploy.
